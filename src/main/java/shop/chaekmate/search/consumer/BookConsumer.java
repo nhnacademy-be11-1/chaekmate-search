@@ -11,6 +11,7 @@ import shop.chaekmate.search.dto.BookInfoRequest;
 public class BookConsumer {
     @RabbitListener(queues = "cm-book-1")
     public void consume(BookInfoRequest bookInfoRequest) {
+
     }
     @RabbitListener(queues = "cm-book-2")
     public void consume2(BookInfoRequest bookInfoRequest) {
