@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import shop.chaekmate.search.task.executor.BookTaskExecutor;
 import shop.chaekmate.search.task.executor.TaskExecutorRegistry;
-import shop.chaekmate.search.task.executor.TaskMapping;
+import shop.chaekmate.search.dto.TaskMapping;
 import shop.chaekmate.search.task.queue.BookTaskQueue;
 
 @Component
@@ -20,7 +20,7 @@ public class BookTaskThread implements Runnable {
             try {
                 TaskMapping task = bookTaskQueue.orderPoll();
                 BookTaskExecutor taskExecutor = taskExecutorRegistry.get(task.getEventType());
-                taskExecutor.execute(task.getBookInfoRequest());
+                taskExecutor.execute(task.getBaseBookTaskDto());
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             } catch (Exception e) {

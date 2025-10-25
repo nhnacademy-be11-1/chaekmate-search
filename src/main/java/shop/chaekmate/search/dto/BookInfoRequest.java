@@ -9,8 +9,7 @@ import shop.chaekmate.search.common.EventType;
 
 @Getter
 @Setter
-public class BookInfoRequest {
-    EventType type;
+public class BookInfoRequest implements BaseBookTaskDto{
     long id;
     String title;
     String author;

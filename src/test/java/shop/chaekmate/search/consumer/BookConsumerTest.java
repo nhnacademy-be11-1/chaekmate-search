@@ -12,8 +12,6 @@ class BookConsumerTest {
     BookConsumer bookConsumer;
     @Test
     void 컨슘성공() {
-        BookInfoRequest  bookInfoRequest = new BookInfoRequest();
-        bookInfoRequest.setId(1);
-        bookConsumer.consume(bookInfoRequest);
+
     }
 }

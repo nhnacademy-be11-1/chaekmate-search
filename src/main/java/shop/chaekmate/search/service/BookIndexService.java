@@ -2,6 +2,7 @@ package shop.chaekmate.search.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.chaekmate.search.dto.BookDeleteRequest;
 import shop.chaekmate.search.dto.BookInfoRequest;
 
 @Service
@@ -16,7 +17,7 @@ public class BookIndexService {
 
     }
 
-    public void delete(BookInfoRequest bookInfoRequest) {
+    public void delete(BookDeleteRequest bookDeleteRequest) {
 
     }
 }

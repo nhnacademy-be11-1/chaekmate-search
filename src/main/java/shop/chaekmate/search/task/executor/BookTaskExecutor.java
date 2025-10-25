@@ -1,7 +1,9 @@
 package shop.chaekmate.search.task.executor;
 
-import shop.chaekmate.search.dto.BookInfoRequest;
+import shop.chaekmate.search.common.EventType;
+import shop.chaekmate.search.dto.BaseBookTaskDto;
 
 public interface BookTaskExecutor {
-    void execute(BookInfoRequest bookInfoRequest);
+    void execute(BaseBookTaskDto bookTaskDto);
+    EventType getType();
 }
