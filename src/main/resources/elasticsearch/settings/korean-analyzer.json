@@ -1,0 +1,26 @@
+{
+  "index": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1,
+    "refresh_interval": "1s"
+  },
+  "analysis": {
+    "tokenizer": {
+      "nori_tokenizer": { "type": "nori_tokenizer" }
+    },
+    "analyzer": {
+      "korean_english_analyzer": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer",
+        "filter": ["lowercase", "nori_part_of_speech", "english_stop", "nori_readingform"],
+        "char_filter": ["html_strip"]
+      }
+    },
+    "normalizer": {
+      "lowercase_normalizer": {
+        "type": "custom",
+        "filter": ["lowercase"]
+      }
+    }
+  }
+}

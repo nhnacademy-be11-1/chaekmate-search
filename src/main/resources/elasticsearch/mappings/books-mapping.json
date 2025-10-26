@@ -1,0 +1,44 @@
+{
+  "properties": {
+    "id": { "type": "long" },
+    "title": {
+      "type": "text",
+      "analyzer": "korean_english_analyzer",
+      "search_analyzer": "korean_english_analyzer",
+      "fields": {
+        "keyword": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+      }
+    },
+    "author": {
+      "type": "text",
+      "analyzer": "korean_english_analyzer",
+      "fields": {
+        "keyword": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+      }
+    },
+    "price": { "type": "scaled_float", "scaling_factor": 100 },
+    "description": { "type": "text", "analyzer": "korean_english_analyzer" },
+    "categories": {
+      "type": "text",
+      "analyzer": "korean_english_analyzer",
+      "fields": {
+        "keyword": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+      }
+    },
+    "tags": {
+      "type": "text",
+      "analyzer": "korean_english_analyzer",
+      "fields": {
+        "keyword": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+      }
+    },
+    "embedding": {
+      "type": "dense_vector",
+      "dims": 1024,
+      "index": true,
+      "similarity": "cosine"
+    },
+    "publicationDatetime": { "type": "date" },
+    "createdAt": { "type": "date" }
+  }
+}
