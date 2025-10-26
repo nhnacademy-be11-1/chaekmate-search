@@ -13,14 +13,17 @@ import shop.chaekmate.search.task.queue.BookTaskQueue;
 @RequiredArgsConstructor
 public class BookConsumer {
     private final BookTaskQueue bookTaskQueue;
+
     @RabbitListener(queues = "cm-book-1")
     public void consume(TaskMapping taskMapping) {
         bookTaskQueue.orderOffer(taskMapping);
     }
+
     @RabbitListener(queues = "cm-book-2")
     public void consume2(TaskMapping taskMapping) {
         bookTaskQueue.orderOffer(taskMapping);
     }
+
     @RabbitListener(queues = "cm-book-3")
     public void consume3(TaskMapping taskMapping) {
         bookTaskQueue.orderOffer(taskMapping);

@@ -39,6 +39,8 @@
       "similarity": "cosine"
     },
     "publicationDatetime": { "type": "date" },
-    "createdAt": { "type": "date" }
+    "createdAt": { "type": "date" },
+    "updateAt": { "type": "date" }
+
   }
 }

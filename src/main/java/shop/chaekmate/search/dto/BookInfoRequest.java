@@ -13,7 +13,7 @@ public class BookInfoRequest implements BaseBookTaskDto{
     long id;
     String title;
     String author;
-    int price;
+    Integer price;
     String description;
     List<String> categories;
     LocalDateTime publicationDatetime;

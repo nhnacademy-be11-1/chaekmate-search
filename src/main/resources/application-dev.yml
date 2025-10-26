@@ -6,6 +6,8 @@ spring:
     password: ${RABBITMQ_PASSWORD}
   elasticsearch:
     uris: http://localhost:9200
+
+
 rabbitmq:
   exchange:
     name: cm-book-exchange
@@ -16,3 +18,7 @@ rabbitmq:
       routing-key: cm-book-key-2
     - name: cm-book-3
       routing-key: cm-book-key-3
+
+ollama:
+  api:
+    url: ${OLLAMA_API_URL}
