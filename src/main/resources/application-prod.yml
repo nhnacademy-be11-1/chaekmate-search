@@ -5,7 +5,9 @@ spring:
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
   elasticsearch:
-    uris: http://localhost:9200
+    uris: ${ES_URL}
+    username: ${ES_USERNAME}
+    password: ${ES_PASSWORD}
 rabbitmq:
   exchange:
     name: cm-book-exchange
