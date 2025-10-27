@@ -11,7 +11,7 @@ import shop.chaekmate.search.dto.SearchResponse;
 import shop.chaekmate.search.service.SearchService;
 
 @RestController
-@RequestMapping("search/")
+@RequestMapping("/search")
 @RequiredArgsConstructor
 public class SearchController {
     private final SearchService searchService;
@@ -19,7 +19,6 @@ public class SearchController {
     @GetMapping
     ResponseEntity<List<SearchResponse>> getSearch(@RequestParam String prompt){
         return ResponseEntity.ok(searchService.getSearch(prompt));
-
     }
 
 

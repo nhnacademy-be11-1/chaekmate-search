@@ -1,8 +1,8 @@
 package shop.chaekmate.search.document;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
 import shop.chaekmate.search.dto.BookInfoRequest;
@@ -14,8 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Document(indexName = "books")
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
 @Setter
+@NoArgsConstructor
 @Setting(settingPath = "elasticsearch/settings/korean-analyzer.json")
 @Mapping(mappingPath = "elasticsearch/mappings/books-mapping.json")
 public class Book {
@@ -53,7 +55,7 @@ public class Book {
     private Instant updateAt;
 
     @Builder
-    Book(long id, String title, String author, int price, String description,List<String> bookImages,  List<String> categories, LocalDateTime publicationDatetime, List<String> tags, Float[] embedding) {
+    Book(long id, String title, String author, int price, String description, List<String> bookImages, List<String> categories, LocalDateTime publicationDatetime, List<String> tags, Float[] embedding) {
         this.id = id;
         this.title = title;
         this.author = author;

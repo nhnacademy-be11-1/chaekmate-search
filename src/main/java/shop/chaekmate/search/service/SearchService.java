@@ -1,8 +1,10 @@
 package shop.chaekmate.search.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.dto.SearchResponse;
 import shop.chaekmate.search.repository.BookRepository;
 
@@ -11,6 +13,11 @@ import shop.chaekmate.search.repository.BookRepository;
 public class SearchService {
     private final BookRepository bookRepository;
     public List<SearchResponse> getSearch(String keyword) {
-        return null;
+        List<Book> books = bookRepository.searchByKeyword(keyword);
+        List<SearchResponse> searchResponses = new ArrayList<>();
+        for (Book book : books) {
+            searchResponses.add(new SearchResponse(book));
+        }
+        return searchResponses;
     }
 }
