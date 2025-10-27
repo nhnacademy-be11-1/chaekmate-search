@@ -8,9 +8,8 @@ import shop.chaekmate.search.task.queue.BookTaskQueue;
 @RequiredArgsConstructor
 public class BookTaskThreadPoolManager {
     private final BookTaskThreadPool bookTaskThreadPool;
-    private final BookTaskQueue bookTaskQueue;
 
-    public void checkStatus(int size) {
+    public void checkStatus(int size,BookTaskQueue bookTaskQueue) {
         int min = BookTaskThreadPool.getDefaultThreadCountMin();
         int max = BookTaskThreadPool.getDefaultThreadCountMax();
         int current = bookTaskThreadPool.getCurrentThreadCount();

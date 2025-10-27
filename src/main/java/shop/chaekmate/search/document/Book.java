@@ -33,7 +33,8 @@ public class Book {
 
     @Field(type = FieldType.Text, analyzer = "korean_english_analyzer")
     private String description;
-
+    @Field(type = FieldType.Text)
+    private List<String> bookImages;
     @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"), otherFields = {@InnerField(suffix = "keyword", type = FieldType.Keyword)})
     private List<String> categories;
 
@@ -44,7 +45,7 @@ public class Book {
     private List<String> tags;
 
     @Field(type = FieldType.Dense_Vector, dims = 1024)
-    private float[] embedding;
+    private Float[] embedding;
 
     @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
     private Instant createdAt;
@@ -52,12 +53,13 @@ public class Book {
     private Instant updateAt;
 
     @Builder
-    Book(long id, String title, String author, int price, String description, List<String> categories, LocalDateTime publicationDatetime, List<String> tags, float[] embedding) {
+    Book(long id, String title, String author, int price, String description,List<String> bookImages,  List<String> categories, LocalDateTime publicationDatetime, List<String> tags, Float[] embedding) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.price = price;
         this.description = description;
+        this.bookImages = bookImages;
         this.categories = categories == null ? new ArrayList<>() : categories;
         this.publicationDatetime = publicationDatetime != null ? publicationDatetime.toInstant(ZoneOffset.UTC) : Instant.now();
         this.tags = tags == null ? new ArrayList<>() : tags;
@@ -65,7 +67,7 @@ public class Book {
         this.createdAt = LocalDateTime.now().toInstant(ZoneOffset.UTC);
     }
 
-    public void update(BookInfoRequest bookInfoRequest, float[] embedding) {
+    public void update(BookInfoRequest bookInfoRequest, Float[] embedding) {
         this.title = bookInfoRequest.getTitle() == null ? title : bookInfoRequest.getTitle();
         this.author = bookInfoRequest.getAuthor() == null ? author : bookInfoRequest.getAuthor();
         this.price = bookInfoRequest.getPrice() == null ? price : bookInfoRequest.getPrice();
@@ -74,6 +76,7 @@ public class Book {
         this.tags = bookInfoRequest.getTags() == null ? tags : bookInfoRequest.getTags();
         this.embedding = embedding != null && embedding.length > 0 ? embedding : this.embedding;
         this.updateAt = LocalDateTime.now().toInstant(ZoneOffset.UTC);
+        this.bookImages = bookInfoRequest.getBookImages() == null ? bookImages : bookInfoRequest.getBookImages();
 
     }
 }

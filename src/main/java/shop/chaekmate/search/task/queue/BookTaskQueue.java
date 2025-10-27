@@ -16,7 +16,7 @@ public class BookTaskQueue {
     private final BookTaskThreadPoolManager bookTaskThreadPoolManager;
     public void orderOffer(TaskMapping taskMapping) {
         taskQueue.offer(taskMapping);
-        bookTaskThreadPoolManager.checkStatus(taskQueue.size());
+        bookTaskThreadPoolManager.checkStatus(taskQueue.size(),this);
     }
 
     public TaskMapping poll(int time, TimeUnit timeUnit) {
