@@ -1,9 +1,12 @@
 package shop.chaekmate.search.task.worker;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import shop.chaekmate.search.task.executor.TaskExecutorRegistry;
 import shop.chaekmate.search.task.queue.BookTaskQueue;
+import shop.chaekmate.search.task.queue.event.QueueSizeChangedEvent;
+import shop.chaekmate.search.task.worker.setting.BookTaskSetting;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,21 +14,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RequiredArgsConstructor
 public class BookTaskThreadPool {
     private static final String THREAD_NAME = "BookTaskThread-";
-    private static final Integer DEFAULT_THREAD_COUNT_MAX = 100;
-    private static final Integer DEFAULT_THREAD_COUNT_MIN = 5;
     private final TaskExecutorRegistry taskExecutorRegistry;
     private final AtomicInteger currentThreadCount = new AtomicInteger(0);
+    private final BookTaskQueue bookTaskQueue;
+    private final BookTaskSetting bookTaskSetting;
 
-    public synchronized void start(BookTaskQueue bookTaskQueue) {
-        for (int i = 0; i < DEFAULT_THREAD_COUNT_MIN; i++) {
+    public synchronized void start() {
+        for (int i = 0; i < bookTaskSetting.getBaseWorkers(); i++) {
             Thread thread = new Thread(new BookTaskThread(bookTaskQueue, taskExecutorRegistry, this));
             thread.setName(String.format("%s%d", THREAD_NAME, i + 1));
             thread.start();
         }
-        currentThreadCount.addAndGet(DEFAULT_THREAD_COUNT_MIN);
+        currentThreadCount.addAndGet(bookTaskSetting.getBaseWorkers());
     }
 
-    public synchronized void addThread(BookTaskQueue bookTaskQueue) {
+    @EventListener(QueueSizeChangedEvent.class)
+    public void queueSizeChangeEvent() {
+        if (getCurrentThreadCount() < bookTaskSetting.getMaxWorkers()) {
+            addThread();
+        }
+    }
+
+    public void addThread() {
         Thread thread = new Thread(new BookTaskThread(bookTaskQueue, taskExecutorRegistry, this));
         thread.setName(String.format("%s%d", THREAD_NAME, currentThreadCount.incrementAndGet()));
         thread.start();
@@ -35,12 +45,8 @@ public class BookTaskThreadPool {
         return this.currentThreadCount.get();
     }
 
-    public static Integer getDefaultThreadCountMax() {
-        return DEFAULT_THREAD_COUNT_MAX;
-    }
-
-    public static Integer getDefaultThreadCountMin() {
-        return DEFAULT_THREAD_COUNT_MIN;
+    public int getBaseThreadCount() {
+        return bookTaskSetting.getBaseWorkers();
     }
 
     public void decrementThreadCount() {

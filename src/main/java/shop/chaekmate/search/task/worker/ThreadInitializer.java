@@ -11,9 +11,10 @@ import shop.chaekmate.search.task.queue.BookTaskQueue;
 @RequiredArgsConstructor
 
 public class ThreadInitializer implements ApplicationRunner {
-    private final ApplicationContext applicationContext;
+    private final BookTaskThreadPool bookTaskThreadPool;
+
     @Override
     public void run(ApplicationArguments args) {
-        applicationContext.getBean(BookTaskThreadPool.class).start(applicationContext.getBean(BookTaskQueue.class));
+        bookTaskThreadPool.start();
     }
 }

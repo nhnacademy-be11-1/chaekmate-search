@@ -17,7 +17,6 @@ import java.util.List;
 @Document(indexName = "books")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Getter
-@Setter
 @NoArgsConstructor
 @Setting(settingPath = "elasticsearch/settings/korean-analyzer.json")
 @Mapping(mappingPath = "elasticsearch/mappings/books-mapping.json")

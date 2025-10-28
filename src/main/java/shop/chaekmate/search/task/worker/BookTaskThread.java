@@ -13,8 +13,7 @@ public class BookTaskThread implements Runnable {
     private final BookTaskQueue bookTaskQueue;
     private final TaskExecutorRegistry taskExecutorRegistry;
     private final BookTaskThreadPool bookTaskThreadPool;
-    private final TimeUnit DEFAULT_TIMEUNIT = TimeUnit.SECONDS;
-    private final int DEFAULT_TIME = 30;
+
     public BookTaskThread(BookTaskQueue bookTaskQueue, TaskExecutorRegistry taskExecutorRegistry, BookTaskThreadPool bookTaskThreadPool) {
         this.bookTaskQueue = bookTaskQueue;
         this.taskExecutorRegistry = taskExecutorRegistry;
@@ -25,9 +24,9 @@ public class BookTaskThread implements Runnable {
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                TaskMapping task = bookTaskQueue.poll(DEFAULT_TIME, DEFAULT_TIMEUNIT);
+                TaskMapping task = bookTaskQueue.poll();
                 if (task == null) {
-                    if (bookTaskThreadPool.getCurrentThreadCount() > BookTaskThreadPool.getDefaultThreadCountMin()) {
+                    if (bookTaskThreadPool.getCurrentThreadCount() > bookTaskThreadPool.getBaseThreadCount()) {
                         bookTaskThreadPool.decrementThreadCount();
                         break;
                     } else {
