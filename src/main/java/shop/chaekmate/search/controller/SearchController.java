@@ -1,5 +1,6 @@
 package shop.chaekmate.search.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping
-    ResponseEntity<List<SearchResponse>> getSearch(@RequestParam String prompt){
+    ResponseEntity<List<SearchResponse>> getSearch(@RequestParam String prompt) throws JsonProcessingException {
         return ResponseEntity.ok(searchService.getSearch(prompt));
     }
 

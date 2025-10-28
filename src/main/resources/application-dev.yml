@@ -8,6 +8,15 @@ spring:
     uris: ${ES_URL}
     username: ${ES_USERNAME}
     password: ${ES_PASSWORD}
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GCP_PROJECT_ID}
+          location: asia-northeast3
+          chat:
+            options:
+              model: gemini-2.5-flash
 
 
 rabbitmq:

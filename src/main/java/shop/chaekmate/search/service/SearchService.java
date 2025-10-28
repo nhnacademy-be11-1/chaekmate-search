@@ -1,9 +1,13 @@
 package shop.chaekmate.search.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.chaekmate.search.api.AiApiClient;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.dto.SearchResponse;
 import shop.chaekmate.search.repository.BookRepository;
@@ -12,12 +16,31 @@ import shop.chaekmate.search.repository.BookRepository;
 @RequiredArgsConstructor
 public class SearchService {
     private final BookRepository bookRepository;
-    public List<SearchResponse> getSearch(String keyword) {
-        List<Book> books = bookRepository.searchByKeyword(keyword);
-        List<SearchResponse> searchResponses = new ArrayList<>();
+    private final AiApiClient aiApiClient;
+    private final ObjectMapper objectMapper;
+
+    public List<SearchResponse> getSearch(String keyword) throws JsonProcessingException {
+        List<Book> keywordBooks = bookRepository.searchByKeyword(keyword);
+        List<Book> vectorBooks = bookRepository.searchByVector(aiApiClient.createEmbedding(keyword));
+        String keywordJson = objectMapper.writeValueAsString(keywordBooks.stream().map(Book::toJson).toList());
+
+        String vectorJson = objectMapper.writeValueAsString(vectorBooks.stream().map(Book::toJson).toList());
+
+        String searchResults = aiApiClient.createSearch(keyword, keywordJson, vectorJson);
+        List<Long> ids = objectMapper.readValue(
+                searchResults,
+                new TypeReference<>() {
+                });
+
+        return searchResultsBooks(ids);
+    }
+
+    private List<SearchResponse> searchResultsBooks(List<Long> ids) {
+        List<Book> books = bookRepository.searchByBookIds(ids);
+        List<SearchResponse> responses = new ArrayList<>();
         for (Book book : books) {
-            searchResponses.add(new SearchResponse(book));
+            responses.add(new SearchResponse(book));
         }
-        return searchResponses;
+        return responses;
     }
 }

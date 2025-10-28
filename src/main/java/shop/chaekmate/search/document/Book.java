@@ -1,6 +1,7 @@
 package shop.chaekmate.search.document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.Map;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.Id;
@@ -37,13 +38,15 @@ public class Book {
     private String description;
     @Field(type = FieldType.Text)
     private List<String> bookImages;
-    @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"), otherFields = {@InnerField(suffix = "keyword", type = FieldType.Keyword)})
+    @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"), otherFields = {
+            @InnerField(suffix = "keyword", type = FieldType.Keyword)})
     private List<String> categories;
 
     @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
     private Instant publicationDatetime;
 
-    @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"), otherFields = {@InnerField(suffix = "keyword", type = FieldType.Keyword)})
+    @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"), otherFields = {
+            @InnerField(suffix = "keyword", type = FieldType.Keyword)})
     private List<String> tags;
 
     @Field(type = FieldType.Dense_Vector, dims = 1024)
@@ -55,7 +58,8 @@ public class Book {
     private Instant updateAt;
 
     @Builder
-    Book(long id, String title, String author, int price, String description, List<String> bookImages, List<String> categories, LocalDateTime publicationDatetime, List<String> tags, Float[] embedding) {
+    Book(long id, String title, String author, int price, String description, List<String> bookImages,
+         List<String> categories, LocalDateTime publicationDatetime, List<String> tags, Float[] embedding) {
         this.id = id;
         this.title = title;
         this.author = author;
@@ -63,7 +67,8 @@ public class Book {
         this.description = description;
         this.bookImages = bookImages;
         this.categories = categories == null ? new ArrayList<>() : categories;
-        this.publicationDatetime = publicationDatetime != null ? publicationDatetime.toInstant(ZoneOffset.UTC) : Instant.now();
+        this.publicationDatetime =
+                publicationDatetime != null ? publicationDatetime.toInstant(ZoneOffset.UTC) : Instant.now();
         this.tags = tags == null ? new ArrayList<>() : tags;
         this.embedding = embedding;
         this.createdAt = LocalDateTime.now().toInstant(ZoneOffset.UTC);
@@ -80,6 +85,17 @@ public class Book {
         this.updateAt = LocalDateTime.now().toInstant(ZoneOffset.UTC);
         this.bookImages = bookInfoRequest.getBookImages() == null ? bookImages : bookInfoRequest.getBookImages();
 
+    }
+
+    public Map<String, Object> toJson() {
+        return Map.of(
+                "id", id,
+                "title", title,
+                "author", author,
+                "price", price,
+                "categories", categories,
+                "tags", tags
+        );
     }
 }
 
