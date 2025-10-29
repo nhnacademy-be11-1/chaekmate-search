@@ -4,8 +4,7 @@ import shop.chaekmate.search.common.EventType;
 import shop.chaekmate.search.dto.BaseBookTaskDto;
 import shop.chaekmate.search.dto.TaskMapping;
 
-public interface BookTaskExecutor<T> {
-    T execute(BaseBookTaskDto bookTaskDto);
-
+public interface BookTaskExecutor<T, R> {
+    R execute(T mapping);
     EventType getType();
 }

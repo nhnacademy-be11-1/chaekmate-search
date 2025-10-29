@@ -11,6 +11,8 @@ import shop.chaekmate.search.dto.BookDeleteRequest;
 import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.repository.BookRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BookIndexService {
@@ -51,5 +53,10 @@ public class BookIndexService {
     public void delete(BookDeleteRequest bookDeleteRequest) {
         Book bookIndex = Valid.isBook(bookRepository.findById(bookDeleteRequest.getId()));
         bookRepository.delete(bookIndex);
+    }
+
+    public Void saveAll(List<Book> bookList) {
+        bookRepository.saveAll(bookList);
+        return null;
     }
 }

@@ -11,12 +11,13 @@ import shop.chaekmate.search.service.BookIndexService;
 
 @Component
 @RequiredArgsConstructor
-public class BookTaskUpdate implements BookTaskExecutor<TaskMapping<Book>> {
+public class BookTaskUpdate implements BookTaskExecutor<TaskMapping<BookInfoRequest>,TaskMapping<Book
+        >> {
     private final BookIndexService bookIndexService;
 
     @Override
-    public TaskMapping<Book> execute(BaseBookTaskDto bookTaskDto) {
-        return new TaskMapping<>(EventType.SAVE,bookIndexService.update((BookInfoRequest) bookTaskDto)) ;
+    public TaskMapping<Book> execute(TaskMapping<BookInfoRequest> mapping) {
+        return new TaskMapping<>(EventType.SAVE,bookIndexService.update(mapping.getTaskData())) ;
     }
 
     @Override
