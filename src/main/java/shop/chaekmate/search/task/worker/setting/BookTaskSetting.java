@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class BookTaskSetting {
-    private final int maxWorkers = 100;
-    private final int baseWorkers = 5;
+    private final int maxWorkers = 16;
+    private final int baseWorkers = 2;
 }

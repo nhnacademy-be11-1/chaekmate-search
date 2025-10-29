@@ -14,10 +14,9 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(indexName = "books")
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Document(indexName = "books",writeTypeHint = WriteTypeHint.FALSE)
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setting(settingPath = "elasticsearch/settings/korean-analyzer.json")
 @Mapping(mappingPath = "elasticsearch/mappings/books-mapping.json")
 public class Book {

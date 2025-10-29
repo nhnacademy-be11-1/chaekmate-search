@@ -27,8 +27,8 @@ public class ElasticsearchConfig {
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        mapper.findAndRegisterModules();
         mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.deactivateDefaultTyping();
 
         RestClient restClient = RestClient.builder(HttpHost.create(esHost))
                 .setDefaultHeaders(new org.apache.http.Header[]{

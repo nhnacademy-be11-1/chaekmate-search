@@ -13,7 +13,7 @@ spring:
       ai:
         gemini:
           project-id: ${GCP_PROJECT_ID}
-          location: asia-northeast3
+          location: asia-northeast1
           chat:
             options:
               model: gemini-2.5-flash

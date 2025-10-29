@@ -16,9 +16,12 @@ public class PromptConfig {
                 1) 키워드 기반 검색 결과 (keywordSearch)
                 2) 벡터 기반 검색 결과 (vectorSearch)
                 
-                두 결과를 relevance가 높은 순서대로 통합 정렬하라.
-                출력은 JSON 배열로만 반환한다.
-                각 항목은 id 필드만 포함한다.
+                주어진 두 검색 결과(keywordSearch, vectorSearch)를 참고하되,
+                사용자의 질의와 가장 관련성이 높은 결과를 선택하고 정렬한다.
+                
+                출력 규칙:
+                - 숫자만 담긴 배열로 반환한다. 배열만 반환한다.
+                - 배열 이외의 어떤 문자(설명, 코드블록, 주석 등)도 출력하지 않는다.
                 
                 keywordSearch:
                 {keywordSearch}
