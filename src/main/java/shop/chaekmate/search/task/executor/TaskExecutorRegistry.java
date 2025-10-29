@@ -12,14 +12,14 @@ import shop.chaekmate.search.common.EventType;
 
 @Component
 public class TaskExecutorRegistry {
-    private final Map<EventType, BookTaskExecutor> registry;
+    private final Map<EventType, BookTaskExecutor<?>> registry;
 
-    public TaskExecutorRegistry(List<BookTaskExecutor> executors) {
+    public TaskExecutorRegistry(List<BookTaskExecutor<?>> executors) {
         this.registry = executors.stream()
                 .collect(Collectors.toMap(BookTaskExecutor::getType, Function.identity()));
     }
 
-    public BookTaskExecutor get(EventType type) {
+    public BookTaskExecutor<?> get(EventType type) {
         return registry.get(type);
     }
 }

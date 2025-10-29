@@ -18,7 +18,7 @@ public class BookIndexService {
     private final BookRepository bookRepository;
 
     @Transactional
-    public void insert(BookInfoRequest bookInfoRequest) {
+    public Book insert(BookInfoRequest bookInfoRequest) {
         Valid.existBook(bookRepository.findById(bookInfoRequest.getId()));
         String text = EmbeddingTextBuilder.toText(bookInfoRequest);
         Float[] embedding = aiApiClient.createEmbedding(text).getEmbedding();
@@ -35,16 +35,16 @@ public class BookIndexService {
                 .tags(bookInfoRequest.getTags())
                 .embedding(embedding)
                 .build();
-        bookRepository.save(bookIndex);
+        return bookIndex;
     }
 
 
-    public void update(BookInfoRequest bookInfoRequest) {
+    public Book update(BookInfoRequest bookInfoRequest) {
         Book bookIndex = Valid.isBook(bookRepository.findById(bookInfoRequest.getId()));
         String text = EmbeddingTextBuilder.toText(bookInfoRequest);
         Float[] embedding = aiApiClient.createEmbedding(text).getEmbedding();
         bookIndex.update(bookInfoRequest, embedding);
-        bookRepository.save(bookIndex);
+        return bookIndex;
 
     }
 

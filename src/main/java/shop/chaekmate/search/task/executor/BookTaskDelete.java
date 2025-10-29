@@ -9,12 +9,14 @@ import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.service.BookIndexService;
 @Component
 @RequiredArgsConstructor
-public class BookTaskDelete implements BookTaskExecutor {
+public class BookTaskDelete implements BookTaskExecutor<Void> {
     private final BookIndexService bookIndexService;
 
     @Override
-    public void execute(BaseBookTaskDto bookTaskDto) {
+    public Void execute(BaseBookTaskDto bookTaskDto) {
         bookIndexService.delete((BookDeleteRequest) bookTaskDto);
+        return  null;
+
     }
 
     @Override

@@ -3,18 +3,20 @@ package shop.chaekmate.search.task.executor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import shop.chaekmate.search.common.EventType;
+import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.dto.BaseBookTaskDto;
 import shop.chaekmate.search.dto.BookInfoRequest;
+import shop.chaekmate.search.dto.TaskMapping;
 import shop.chaekmate.search.service.BookIndexService;
 
 @Component
 @RequiredArgsConstructor
-public class BookTaskUpdate implements BookTaskExecutor {
+public class BookTaskUpdate implements BookTaskExecutor<TaskMapping<Book>> {
     private final BookIndexService bookIndexService;
 
     @Override
-    public void execute(BaseBookTaskDto bookTaskDto) {
-        bookIndexService.update((BookInfoRequest) bookTaskDto);
+    public TaskMapping<Book> execute(BaseBookTaskDto bookTaskDto) {
+        return new TaskMapping<>(EventType.SAVE,bookIndexService.update((BookInfoRequest) bookTaskDto)) ;
     }
 
     @Override
