@@ -14,7 +14,8 @@ public class BookTaskSave implements BookTaskExecutor<List<Book>,Void>{
 
     @Override
     public Void execute(List<Book> mapping) {
-        return bookIndexService.saveAll(mapping);
+        bookIndexService.saveAll(mapping);
+        return null;
     }
 
     @Override

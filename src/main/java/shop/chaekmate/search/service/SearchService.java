@@ -19,7 +19,7 @@ public class SearchService {
     private final AiApiClient aiApiClient;
     private final ObjectMapper objectMapper;
 
-    public List<SearchResponse> getSearch(String keyword) throws JsonProcessingException {
+    public List<SearchResponse> search(String keyword) throws JsonProcessingException {
         List<Book> keywordBooks = bookRepository.searchByKeyword(keyword);
         List<Book> vectorBooks = bookRepository.searchByVector(aiApiClient.createEmbedding(keyword));
         String keywordJson = objectMapper.writeValueAsString(keywordBooks.stream().map(Book::toJson).toList());

@@ -18,8 +18,8 @@ public class SearchController {
     private final SearchService searchService;
 
     @GetMapping
-    ResponseEntity<List<SearchResponse>> getSearch(@RequestParam String prompt) throws JsonProcessingException {
-        return ResponseEntity.ok(searchService.getSearch(prompt));
+    ResponseEntity<List<SearchResponse>> search(@RequestParam String prompt) throws JsonProcessingException {
+        return ResponseEntity.ok(searchService.search(prompt));
     }
 
 

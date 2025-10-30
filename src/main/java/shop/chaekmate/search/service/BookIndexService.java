@@ -19,7 +19,6 @@ public class BookIndexService {
     private final AiApiClient aiApiClient;
     private final BookRepository bookRepository;
 
-    @Transactional
     public Book insert(BookInfoRequest bookInfoRequest) {
         Valid.existBook(bookRepository.findById(bookInfoRequest.getId()));
         String text = EmbeddingTextBuilder.toText(bookInfoRequest);
@@ -53,9 +52,8 @@ public class BookIndexService {
         Book bookIndex = Valid.isBook(bookRepository.findById(bookDeleteRequest.getId()));
         bookRepository.delete(bookIndex);
     }
-
-    public Void saveAll(List<Book> bookList) {
+    @Transactional
+    public void saveAll(List<Book> bookList) {
         bookRepository.saveAll(bookList);
-        return null;
     }
 }

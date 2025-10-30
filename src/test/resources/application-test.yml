@@ -1,0 +1,35 @@
+spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+  elasticsearch:
+    uris: ${ES_URL}
+    username: ${ES_USERNAME}
+    password: ${ES_PASSWORD}
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GCP_PROJECT_ID}
+          location: asia-northeast1
+          chat:
+            options:
+              model: gemini-2.5-flash
+
+
+rabbitmq:
+  exchange:
+    name: cm-book-exchange
+  queues:
+    - name: cm-book-1
+      routing-key: cm-book-key-1
+    - name: cm-book-2
+      routing-key: cm-book-key-2
+    - name: cm-book-3
+      routing-key: cm-book-key-3
+
+ollama:
+  api:
+    url: ${OLLAMA_API_URL}
