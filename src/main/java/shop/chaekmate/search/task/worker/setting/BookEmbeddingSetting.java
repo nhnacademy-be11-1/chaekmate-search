@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class BookEmbeddingSetting {
-    private final int workers = 2;
+    private final int workers = 10;
 
 }

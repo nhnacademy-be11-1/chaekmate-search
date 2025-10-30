@@ -4,10 +4,8 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
 import lombok.Getter;
 import shop.chaekmate.search.common.EventType;
-import shop.chaekmate.search.dto.TaskMapping;
 
 public class BookTaskQueue<T> {
 

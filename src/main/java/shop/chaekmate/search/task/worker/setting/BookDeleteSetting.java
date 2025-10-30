@@ -8,5 +8,5 @@ import org.springframework.stereotype.Component;
 @Setter
 @Component
 public class BookDeleteSetting {
-    private final int workers = 2;
+    private final int workers = 1;
 }

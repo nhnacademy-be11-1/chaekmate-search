@@ -25,7 +25,7 @@ public class BookIndexService {
         String text = EmbeddingTextBuilder.toText(bookInfoRequest);
         Float[] embedding = aiApiClient.createEmbedding(text).getEmbedding();
 
-        Book bookIndex = Book.builder()
+        return Book.builder()
                 .id(bookInfoRequest.getId())
                 .title(bookInfoRequest.getTitle())
                 .author(bookInfoRequest.getAuthor())
@@ -37,7 +37,6 @@ public class BookIndexService {
                 .tags(bookInfoRequest.getTags())
                 .embedding(embedding)
                 .build();
-        return bookIndex;
     }
 
 
