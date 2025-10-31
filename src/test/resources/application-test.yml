@@ -23,12 +23,9 @@ rabbitmq:
   exchange:
     name: cm-book-exchange
   queues:
-    - name: cm-book-1
-      routing-key: cm-book-key-1
-    - name: cm-book-2
-      routing-key: cm-book-key-2
-    - name: cm-book-3
-      routing-key: cm-book-key-3
+    queue-names:  cm-test-book-1, cm-test-book-2, cm-test-book-3
+    routing-keys:  cm-test-book-key-1, cm-test-book-key-2, cm-test-book-key-3
+
 
 ollama:
   api:

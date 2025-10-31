@@ -6,10 +6,10 @@
   },
   "analysis": {
     "tokenizer": {
-      "nori_tokenizer": { "type": "nori_tokenizer" }
+      "nori_tokenizer": { "type": "nori_tokenizer" ,"decompound_mode": "mixed"}
     },
     "filter": {
-      "nori_part_of_speech": {
+      "nori_part_of_speech  ": {
         "type": "nori_part_of_speech",
         "stoptags": [
           "E", "IC", "J", "SP", "SSC", "SSO", "SC", "SE",

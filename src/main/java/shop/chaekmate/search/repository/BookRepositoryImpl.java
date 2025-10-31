@@ -2,6 +2,7 @@ package shop.chaekmate.search.repository;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import java.util.Arrays;
@@ -27,6 +28,8 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                                     .multiMatch(m -> m
                                             .query(keyword)
                                             .fields("title^100", "description^10", "tags^50")
+                                            .analyzer("korean_english_analyzer")
+                                            .operator(Operator.Or)
                                     )
                             ),
                     Book.class

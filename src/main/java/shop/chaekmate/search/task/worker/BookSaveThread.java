@@ -16,15 +16,15 @@ public class BookSaveThread implements Runnable {
     private final BookTaskQueue<TaskMapping<Book>> bookTaskQueue;
     private final int batchSize = 500;
     private final BookTaskExecutor<List<Book>, Void> task;
-
-    public BookSaveThread(BookTaskQueue<TaskMapping<Book>> bookTaskQueue, TaskExecutorRegistry taskExecutorRegistry) {
+    private final List<Book> buffer = new ArrayList<>();
+        public BookSaveThread(BookTaskQueue<TaskMapping<Book>> bookTaskQueue, TaskExecutorRegistry taskExecutorRegistry) {
         this.bookTaskQueue = bookTaskQueue;
         this.task = taskExecutorRegistry.get(EventType.SAVE);
     }
 
     @Override
     public void run() {
-        List<Book> buffer = new ArrayList<>();
+
 
         try {
             while (!Thread.currentThread().isInterrupted()) {
@@ -51,6 +51,7 @@ public class BookSaveThread implements Runnable {
         if (buffer.isEmpty()) return;
         try {
             task.execute(buffer);
+            buffer.clear();
         } catch (Exception e) {
             log.error("Book save thread error", e);
         }

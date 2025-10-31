@@ -36,4 +36,10 @@ public class BookTaskQueue<T> {
         }
     }
 
+    public int getSize() {
+        return queue.size();
+    }
+    public void clear(){
+        queue.clear();
+    }
 }
