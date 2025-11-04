@@ -1,17 +1,10 @@
 package shop.chaekmate.search.task.queue;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import shop.chaekmate.search.common.EventType;
-import shop.chaekmate.search.document.Book;
-import shop.chaekmate.search.dto.BookDeleteRequest;
-import shop.chaekmate.search.dto.BookInfoRequest;
-import shop.chaekmate.search.dto.TaskMapping;
 
 @Component
 public class BookTaskQueueRegistry<T> {

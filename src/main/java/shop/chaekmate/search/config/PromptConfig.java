@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class PromptConfig {
     @Bean
     public PromptTemplate searchPromptTemplate() {
-        PromptTemplate template = new PromptTemplate("""
+        return new PromptTemplate("""
                 너는 검색 결과 리랭킹 엔진이다.
                 사용자의 질의: "{input}"
                 
@@ -29,6 +29,5 @@ public class PromptConfig {
                 vectorSearch:
                 {vectorSearch}
                 """);
-        return template;
     }
 }

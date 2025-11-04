@@ -17,7 +17,8 @@ public class BookEmbeddingThread implements Runnable {
     private final BookTaskQueueRegistry bookTaskQueueRegistry;
     private final TaskExecutorRegistry taskExecutorRegistry;
 
-    public BookEmbeddingThread(BookTaskQueue<TaskMapping<BookInfoRequest>> bookTaskQueue, BookTaskQueueRegistry bookTaskQueueRegistry, TaskExecutorRegistry taskExecutorRegistry) {
+    public BookEmbeddingThread(BookTaskQueue<TaskMapping<BookInfoRequest>> bookTaskQueue,
+                               BookTaskQueueRegistry bookTaskQueueRegistry, TaskExecutorRegistry taskExecutorRegistry) {
         this.bookTaskQueue = bookTaskQueue;
         this.bookTaskQueueRegistry = bookTaskQueueRegistry;
         this.taskExecutorRegistry = taskExecutorRegistry;
@@ -28,7 +29,8 @@ public class BookEmbeddingThread implements Runnable {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 TaskMapping<BookInfoRequest> task = bookTaskQueue.take();
-                BookTaskExecutor<TaskMapping<BookInfoRequest>, TaskMapping<Book>> bookTaskExecutor = taskExecutorRegistry.get(task.getEventType());
+                BookTaskExecutor<TaskMapping<BookInfoRequest>, TaskMapping<Book>> bookTaskExecutor = taskExecutorRegistry.get(
+                        task.getEventType());
                 TaskMapping<Book> taskMapping = bookTaskExecutor.execute(task);
                 BookTaskQueue<TaskMapping<Book>> nextQueue = bookTaskQueueRegistry.getQueue(taskMapping.getEventType());
                 nextQueue.offer(taskMapping);

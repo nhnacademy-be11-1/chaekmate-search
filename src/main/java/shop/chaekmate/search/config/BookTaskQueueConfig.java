@@ -22,13 +22,14 @@ public class BookTaskQueueConfig {
 
     @Bean
     public BookTaskQueue<TaskMapping<BookInfoRequest>> bookEmbeddingQueue() {
-        return new BookTaskQueue<>(Set.of(EventType.INSERT,EventType.UPDATE));
+        return new BookTaskQueue<>(Set.of(EventType.INSERT, EventType.UPDATE));
     }
 
     @Bean
     public BookTaskQueue<TaskMapping<Book>> bookSaveQueue() {
         return new BookTaskQueue<>(Set.of(EventType.SAVE));
     }
+
     @Bean
     public BookTaskQueue<TaskMapping<BookDeleteRequest>> bookDeleteQueue() {
         return new BookTaskQueue<>(Set.of(EventType.DELETE));

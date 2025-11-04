@@ -8,8 +8,8 @@ import shop.chaekmate.search.task.queue.BookTaskQueueRegistry;
 @Slf4j
 public class BookEventThread implements Runnable {
     private final BookTaskQueue<?> bookTaskQueue;
-    private final BookTaskQueueRegistry bookTaskQueueRegistry;
-    public BookEventThread(BookTaskQueue<?> bookTaskQueue, BookTaskQueueRegistry bookTaskQueueRegistry) {
+    private final BookTaskQueueRegistry<?> bookTaskQueueRegistry;
+    public BookEventThread(BookTaskQueue<?> bookTaskQueue, BookTaskQueueRegistry<?> bookTaskQueueRegistry) {
         this.bookTaskQueue = bookTaskQueue;
         this.bookTaskQueueRegistry = bookTaskQueueRegistry;
     }

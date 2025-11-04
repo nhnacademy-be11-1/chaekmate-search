@@ -1,18 +1,26 @@
 package shop.chaekmate.search.document;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.util.Map;
-import lombok.*;
-import lombok.extern.jackson.Jacksonized;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.*;
-import shop.chaekmate.search.dto.BookInfoRequest;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.InnerField;
+import org.springframework.data.elasticsearch.annotations.Mapping;
+import org.springframework.data.elasticsearch.annotations.MultiField;
+import org.springframework.data.elasticsearch.annotations.Setting;
+import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
+import shop.chaekmate.search.dto.BookInfoRequest;
 
 @Document(indexName = "books",writeTypeHint = WriteTypeHint.FALSE)
 @Getter

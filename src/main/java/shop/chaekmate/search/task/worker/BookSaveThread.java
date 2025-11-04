@@ -14,10 +14,11 @@ import java.util.List;
 @Slf4j
 public class BookSaveThread implements Runnable {
     private final BookTaskQueue<TaskMapping<Book>> bookTaskQueue;
-    private final int batchSize = 500;
+    private static final int DEFAULT_BACTH_SIZE = 500;
     private final BookTaskExecutor<List<Book>, Void> task;
     private final List<Book> buffer = new ArrayList<>();
-        public BookSaveThread(BookTaskQueue<TaskMapping<Book>> bookTaskQueue, TaskExecutorRegistry taskExecutorRegistry) {
+
+    public BookSaveThread(BookTaskQueue<TaskMapping<Book>> bookTaskQueue, TaskExecutorRegistry taskExecutorRegistry) {
         this.bookTaskQueue = bookTaskQueue;
         this.task = taskExecutorRegistry.get(EventType.SAVE);
     }
@@ -25,19 +26,17 @@ public class BookSaveThread implements Runnable {
     @Override
     public void run() {
 
-
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 TaskMapping<Book> mapping = bookTaskQueue.poll();
                 if (mapping != null) {
                     buffer.add(mapping.getTaskData());
                 }
-                boolean sizeTrigger = buffer.size() >= batchSize;
+                boolean sizeTrigger = buffer.size() >= DEFAULT_BACTH_SIZE;
                 boolean timeoutTrigger = mapping == null && !buffer.isEmpty();
 
                 if (sizeTrigger || timeoutTrigger) {
                     saveAll(buffer);
-                    buffer.clear();
                 }
             }
         } catch (Exception e) {
@@ -48,7 +47,9 @@ public class BookSaveThread implements Runnable {
     }
 
     private void saveAll(List<Book> buffer) {
-        if (buffer.isEmpty()) return;
+        if (buffer.isEmpty()) {
+            return;
+        }
         try {
             task.execute(buffer);
             buffer.clear();

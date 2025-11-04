@@ -1,10 +1,14 @@
 package shop.chaekmate.search.task.worker.setting;
 
-import lombok.Getter;
-import org.springframework.stereotype.Component;
+public class BookSaveSetting implements BookSetting{
 
-@Component
-@Getter
-public class BookSaveSetting {
-    private final int workers = 2;
+    @Override
+    public String name() {
+        return "BookSaveThread-";
+    }
+
+    @Override
+    public int threadSize() {
+        return 2;
+    }
 }

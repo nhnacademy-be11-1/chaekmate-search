@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import shop.chaekmate.search.common.EventType;
 
 @Getter
 @Setter
