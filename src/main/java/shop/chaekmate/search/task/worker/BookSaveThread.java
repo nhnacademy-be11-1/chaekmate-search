@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 public class BookSaveThread implements Runnable {
     private final BookTaskQueue<TaskMapping<Book>> bookTaskQueue;
-    private static final int DEFAULT_BACTH_SIZE = 500;
+    private static final int DEFAULT_BATCH_SIZE = 500;
     private final BookTaskExecutor<List<Book>, Void> task;
     private final List<Book> buffer = new ArrayList<>();
 
@@ -32,7 +32,7 @@ public class BookSaveThread implements Runnable {
                 if (mapping != null) {
                     buffer.add(mapping.getTaskData());
                 }
-                boolean sizeTrigger = buffer.size() >= DEFAULT_BACTH_SIZE;
+                boolean sizeTrigger = buffer.size() >= DEFAULT_BATCH_SIZE;
                 boolean timeoutTrigger = mapping == null && !buffer.isEmpty();
 
                 if (sizeTrigger || timeoutTrigger) {
