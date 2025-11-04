@@ -20,6 +20,7 @@ public class SearchService {
     private final ObjectMapper objectMapper;
 
     public List<SearchResponse> search(String keyword) throws JsonProcessingException {
+
         List<Book> keywordBooks = bookRepository.searchByKeyword(keyword);
         List<Book> vectorBooks = bookRepository.searchByVector(aiApiClient.createEmbedding(keyword));
         String keywordJson = objectMapper.writeValueAsString(keywordBooks.stream().map(Book::toJson).toList());
@@ -43,4 +44,6 @@ public class SearchService {
         }
         return responses;
     }
+
+
 }
