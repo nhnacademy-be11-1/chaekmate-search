@@ -1,8 +1,6 @@
 package shop.chaekmate.search.task.worker;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.config.Task;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.dto.TaskMapping;
