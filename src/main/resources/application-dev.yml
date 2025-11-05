@@ -1,13 +1,25 @@
+# Search Server Port
+server:
+  port: 9400
+
+# Eureka Server URL
+eureka:
+  client:
+    service-url:
+      defaultZone: http://chaekmate:1234@localhost:8761/eureka
+
 spring:
   rabbitmq:
     host: ${RABBITMQ_HOST}
     port: 5672
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
+
   elasticsearch:
     uris: ${ES_URL}
     username: ${ES_USERNAME}
     password: ${ES_PASSWORD}
+
   ai:
     vertex:
       ai:
@@ -25,6 +37,7 @@ rabbitmq:
   queues:
     queue-names:  cm-book-1, cm-book-2, cm-book-3
     routing-keys:  cm-book-key-1, cm-book-key-2, cm-book-key-3
+
 ollama:
   api:
     url: ${OLLAMA_API_URL}

@@ -12,8 +12,19 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      SPRING_PROFILES_ACTIVE: prod
       DOMAIN: ${{ secrets.DOMAIN_NAME }}
       PORT: ${{ secrets.PORT_NUMBER }}
+      ES_URL: ${{ secrets.ES_URL }}
+      ES_USERNAME: ${{ secrets.ES_USERNAME }}
+      ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
+      OLLAMA_API_URL: ${{ secrets.OLLAMA_API_URL }}
+      RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+      RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+      RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      EUREKA_URL_PROD: ${{ secrets.EUREKA_URL_PROD }}
 
     steps:
       # Step.1 코드 체크아웃
@@ -50,7 +61,8 @@ jobs:
             -Dsonar.projectKey=chaekmate-search \
             -Dsonar.projectName="chaekmate-search" \
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}  \
+            -Dsonar.coverage.jacoco.xmlReportPaths=api/target/site/jacoco/jacoco.xml
 
       # Step.6 JAR 파일 이름 변경
       - name: Rename JAR File
