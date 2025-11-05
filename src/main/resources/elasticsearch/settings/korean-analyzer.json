@@ -1,0 +1,49 @@
+{
+  "index": {
+    "number_of_shards": 3,
+    "number_of_replicas": 1,
+    "refresh_interval": "1s"
+  },
+  "analysis": {
+    "tokenizer": {
+      "nori_tokenizer": { "type": "nori_tokenizer" ,"decompound_mode": "mixed"}
+    },
+    "filter": {
+      "nori_part_of_speech  ": {
+        "type": "nori_part_of_speech",
+        "stoptags": [
+          "E", "IC", "J", "SP", "SSC", "SSO", "SC", "SE",
+          "XPN", "XSA", "XSN", "XSV"
+        ]
+      },
+      "english_stop": {
+        "type": "stop",
+        "stopwords": "_english_"
+      },
+      "korean_stop": {
+        "type": "stop",
+        "stopwords": ["그래서", "그리고", "하지만", "또한", "즉", "그런데"]
+      }
+    },
+    "analyzer": {
+      "korean_english_analyzer": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer",
+        "filter": [
+          "lowercase",
+          "nori_readingform",
+          "nori_part_of_speech",
+          "english_stop",
+          "korean_stop"
+        ],
+        "char_filter": ["html_strip"]
+      }
+    },
+    "normalizer": {
+      "lowercase_normalizer": {
+        "type": "custom",
+        "filter": ["lowercase"]
+      }
+    }
+  }
+}
