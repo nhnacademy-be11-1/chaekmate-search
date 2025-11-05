@@ -4,11 +4,14 @@ import static java.util.UUID.randomUUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -18,12 +21,14 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import shop.chaekmate.search.api.AiApiClient;
 import shop.chaekmate.search.document.Book;
+import shop.chaekmate.search.document.ExpiringGroup;
 import shop.chaekmate.search.document.KeywordGroup;
 import shop.chaekmate.search.document.KeywordGroupMapping;
 import shop.chaekmate.search.dto.EmbeddingResponse;
 import shop.chaekmate.search.dto.GroupNameDto;
 import shop.chaekmate.search.repository.BookRepository;
 import shop.chaekmate.search.repository.KeywordGroupRepository;
+import shop.chaekmate.search.task.queue.ExpiringGroupManager;
 
 @Slf4j
 @Component
@@ -34,8 +39,10 @@ public class EventExecute {
     private final RedisCacheManager redisCacheManager;
     private final ObjectMapper objectMapper;
     private final BookRepository bookRepository;
-    private static  final String GROUP_MAPPING = "group-mapping";
+    private static final String GROUP_MAPPING = "group-mapping";
     private static final String GROUP = "group";
+
+    private final ExpiringGroupManager expiringGroupManager;
     @EventListener(CreateGroupEvent.class)
     @Async
     public void createGroupEvent(CreateGroupEvent createGroupEvent) throws JsonProcessingException {
@@ -63,6 +70,7 @@ public class EventExecute {
                 groupIds.add(id);
                 mappingCache.put(book.getId(), groupIds);
             }
+            expiringGroupManager.offer(id,Duration.ofHours(3));
         }
     }
 
@@ -124,11 +132,31 @@ public class EventExecute {
         }
 
     }
-    private Cache getCache(String name) {
-        Cache cache = redisCacheManager.getCache(name);
-        if (cache == null) {
-            return null;
+
+    @EventListener(ExpiringGroup.class)
+    @Async
+    public void expiringGroup(ExpiringGroup expiringGroup) {
+        Cache groupCache = getCache(GROUP);
+        Cache mappingCache = getCache(GROUP_MAPPING);
+        if (groupCache == null || mappingCache == null) {
+            return;
         }
-        return cache;
+        KeywordGroupMapping mapping = groupCache.get(expiringGroup.getUuid(), KeywordGroupMapping.class);
+        if(mapping == null){
+            return;
+        }
+        keywordGroupRepository.findById(mapping.getId()).ifPresent(keywordGroupRepository::delete);
+        for (Long id :mapping.getIds() ) {
+            Set<UUID> changeGroupIds = mappingCache.get(id, Set.class);
+            if(changeGroupIds == null){
+                continue;
+            }
+            changeGroupIds.remove(mapping.getId());
+            mappingCache.put(id,changeGroupIds);
+        }
+
+    }
+    private Cache getCache(String name) {
+        return redisCacheManager.getCache(name);
     }
 }
