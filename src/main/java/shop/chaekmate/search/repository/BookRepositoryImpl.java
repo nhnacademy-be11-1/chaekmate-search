@@ -12,18 +12,20 @@ import shop.chaekmate.search.document.Book;
 
 import java.io.IOException;
 import java.util.List;
+import shop.chaekmate.search.document.KeywordGroup;
 import shop.chaekmate.search.dto.EmbeddingResponse;
 
 @Repository
 @RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepositoryCustom {
     private final ElasticsearchClient client;
-
+    private static final String BOOK_INDEX = "books";
+    private static final String KEYWORD_GROUP_INDEX = "keywordgroups";
     @Override
     public List<Book> searchByKeyword(String keyword) {
         try {
             SearchResponse<Book> response = client.search(s -> s
-                            .index("books")
+                            .index(BOOK_INDEX)
                             .query(q -> q
                                     .multiMatch(m -> m
                                             .query(keyword)
@@ -48,7 +50,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 
         try {
             SearchResponse<Book> response = client.search(s -> s
-                            .index("books")
+                            .index(BOOK_INDEX)
                             .knn(knn -> knn
                                     .field("embedding")
                                     .queryVector(Arrays.asList(vector))
@@ -71,7 +73,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     public List<Book> searchByBookIds(List<Long> ids) {
         try {
             SearchResponse<Book> response = client.search(s -> s
-                            .index("books")
+                            .index(BOOK_INDEX)
                             .query(q -> q
                                     .terms(t -> t
                                             .field("id")
@@ -90,4 +92,34 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public List<KeywordGroup> searchByKeywordGroupVector(EmbeddingResponse embedding,int k) {
+        Float[] vector = embedding.getEmbedding();
+
+        try {
+            SearchResponse<KeywordGroup> response = client.search(s -> s
+                            .index(KEYWORD_GROUP_INDEX)
+                            .knn(knn -> knn
+                                    .field("embedding")
+                                    .queryVector(Arrays.asList(vector))
+                                    .k(k)
+                                    .numCandidates(100)
+                            ),
+                    KeywordGroup.class
+            );
+
+            return response.hits().hits().stream()
+                    .filter(hit -> hit.score() != null && hit.score() >= 0.78f)
+                    .sorted((a, b) -> Double.compare(b.score(), a.score()))
+                    .limit(k)
+                    .map(Hit::source)
+                    .toList();
+
+
+        } catch (IOException e) {
+            throw new RuntimeException("Vector search failed", e);
+        }
+    }
+
 }

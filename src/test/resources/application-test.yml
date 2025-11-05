@@ -17,8 +17,12 @@ spring:
           chat:
             options:
               model: gemini-2.5-flash
-
-
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+      password: ${REDIS_PASSWORD}
+      database: 309
 rabbitmq:
   exchange:
     name: cm-book-exchange
