@@ -1,9 +1,22 @@
+# Search/Eureka Server Port (prod) : "배포설명" 확인
+
+# Search Server Port
+server:
+  port: ${PORT_NUMBER}
+
+# Eureka Server URL
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL_PROD}
+
 spring:
   rabbitmq:
     host: ${RABBITMQ_HOST}
     port: 5672
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
+
   elasticsearch:
     uris: ${ES_URL}
     username: ${ES_USERNAME}
@@ -29,3 +42,6 @@ ollama:
   api:
     url: ${OLLAMA_API_URL}
 
+logging:
+  level:
+    root: info
