@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.context.ApplicationEventPublisher;
@@ -33,14 +34,15 @@ public class SearchService {
 
     public List<SearchResponse> search(String keyword) throws JsonProcessingException {
         EmbeddingResponse embeddingResponse = aiApiClient.createEmbedding(keyword);
-        List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(embeddingResponse,20);
+        List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(embeddingResponse, 20);
         if (!keywordGroups.isEmpty()) {
             Cache cache = redisCacheManager.getCache("group");
-            ValueWrapper wrapper = cache.get(keywordGroups.getFirst().id);
-            if (wrapper != null) {
-                KeywordGroupMapping groupMapping = objectMapper.convertValue(wrapper.get(), KeywordGroupMapping.class);
-                List<Book> books = resultsBooks(groupMapping.getIds());
-                return responseBooks(books);
+            if (cache != null) {
+                KeywordGroupMapping mapping = toKeywordGroupMapping(cache, keywordGroups.getFirst().id);
+                if (mapping != null) {
+                    List<Book> books = resultsBooks(mapping.getIds());
+                    return responseBooks(books);
+                }
             }
         }
         List<Book> vectorBooks = bookRepository.searchByVector(embeddingResponse);
@@ -55,26 +57,29 @@ public class SearchService {
                 new TypeReference<>() {
                 });
         List<Book> books = resultsBooks(ids);
-        publisher.publishEvent(new CreateGroupEvent(keyword,  books, ids,embeddingResponse.getEmbedding()));
+        publisher.publishEvent(new CreateGroupEvent(keyword, books, ids, embeddingResponse.getEmbedding()));
         return responseBooks(books);
     }
+
     public RecommendKeywordResponse recommendKeyword(String keyword) {
         EmbeddingResponse embeddingResponse = aiApiClient.createEmbedding(keyword);
-        List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(embeddingResponse,5);
+        List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(embeddingResponse, 5);
         List<String> recommendKeyword = new ArrayList<>();
         if (!keywordGroups.isEmpty()) {
             Cache cache = redisCacheManager.getCache("group");
-            for (KeywordGroup keywordGroup : keywordGroups) {
-                ValueWrapper wrapper = cache.get(keywordGroup.getId());
-                if (wrapper != null && wrapper.get() != null) {
-                    KeywordGroupMapping mapping = objectMapper.convertValue(wrapper.get(), KeywordGroupMapping.class);
-                    recommendKeyword.add(mapping.getGroupName());
+            if (cache != null) {
+                for (KeywordGroup keywordGroup : keywordGroups) {
+                    KeywordGroupMapping mapping = toKeywordGroupMapping(cache, keywordGroup.getId());
+                    if (mapping != null) {
+                        recommendKeyword.add(mapping.getGroupName());
+                    }
                 }
             }
         }
         return new RecommendKeywordResponse(recommendKeyword);
 
     }
+
     private List<Book> resultsBooks(List<Long> ids) {
         return bookRepository.searchByBookIds(ids);
     }
@@ -85,5 +90,14 @@ public class SearchService {
             responses.add(new SearchResponse(book));
         }
         return responses;
+    }
+
+    private KeywordGroupMapping toKeywordGroupMapping(Cache groupCache, UUID groupId) {
+        ValueWrapper wrapper = groupCache.get(groupId);
+        if (wrapper == null) {
+            return null;
+        }
+        return objectMapper.convertValue(wrapper.get(),
+                KeywordGroupMapping.class);
     }
 }

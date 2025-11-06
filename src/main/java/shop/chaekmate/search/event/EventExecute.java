@@ -4,17 +4,18 @@ import static java.util.UUID.randomUUID;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
+import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.scheduling.annotation.Async;
@@ -43,6 +44,7 @@ public class EventExecute {
     private static final String GROUP = "group";
 
     private final ExpiringGroupManager expiringGroupManager;
+
     @EventListener(CreateGroupEvent.class)
     @Async
     public void createGroupEvent(CreateGroupEvent createGroupEvent) throws JsonProcessingException {
@@ -51,8 +53,8 @@ public class EventExecute {
         String keywordJson = objectMapper.writeValueAsString(createGroupEvent.keyword());
         String booksJson = objectMapper.writeValueAsString(books.stream().map(Book::toJson).toList());
         String keywordVector = objectMapper.writeValueAsString(createGroupEvent.vector());
-        String groupJson = aiApiClient.groupName(keywordJson, booksJson, keywordVector);
-
+        String groupJson = aiApiClient.groupName(keywordJson, booksJson, keywordVector)
+                .replaceAll("(?s)```json|```", "").trim();
         GroupNameDto groupNameDto = objectMapper.readValue(groupJson, GroupNameDto.class);
         EmbeddingResponse embeddingResponse = aiApiClient.createEmbedding(groupNameDto.getGroupName());
         UUID id = randomUUID();
@@ -63,14 +65,14 @@ public class EventExecute {
         if (groupCache != null && mappingCache != null) {
             groupCache.put(id, new KeywordGroupMapping(id, ids, groupNameDto.getGroupName(), 0));
             keywordGroupRepository.save(keywordGroup);
+
             for (Book book : books) {
-                Set<UUID> groupIds = Optional.ofNullable(mappingCache.get(book.getId(), Set.class))
-                        .map(s -> (Set<UUID>) s)
-                        .orElse(new HashSet<>());
+                Set<UUID> groupIds = new HashSet<>(Optional.ofNullable(mappingCache.get(book.getId(), List.class))
+                        .orElse(Collections.emptyList()));
                 groupIds.add(id);
-                mappingCache.put(book.getId(), groupIds);
+                mappingCache.put(book.getId(), new ArrayList<>(groupIds));
             }
-            expiringGroupManager.offer(id,Duration.ofHours(3));
+            expiringGroupManager.offer(id, Duration.ofHours(3));
         }
     }
 
@@ -85,29 +87,32 @@ public class EventExecute {
         if (groupCache == null || mappingCache == null) {
             return;
         }
-
-        Set<UUID> oldGroupIds = mappingCache.get(book.getId(), Set.class);
-        if (oldGroupIds != null && !oldGroupIds.isEmpty()) {
+        Set<UUID> oldGroupIds = new HashSet<>(Optional.ofNullable(mappingCache.get(book.getId(), List.class))
+                .orElse(Collections.emptyList()));
+        if (!oldGroupIds.isEmpty()) {
             for (UUID groupId : oldGroupIds) {
-                KeywordGroupMapping mapping = groupCache.get(groupId, KeywordGroupMapping.class);
+                KeywordGroupMapping mapping = toKeywordGroupMapping(groupCache, groupId);
                 if (mapping != null) {
                     mapping.getIds().removeIf(id -> id.equals(book.getId()));
                     groupCache.put(groupId, mapping);
                 }
-            }
-            mappingCache.evict(book.getId());
-        }
 
-        Set<UUID> newGroupIds = new HashSet<>();
-        for (KeywordGroup group : keywordGroups) {
-            newGroupIds.add(group.getId());
-            KeywordGroupMapping mapping = groupCache.get(group.getId(), KeywordGroupMapping.class);
-            if (mapping != null) {
-                mapping.getIds().add(book.getId());
-                groupCache.put(group.getId(), mapping);
+                mappingCache.evict(book.getId());
+            }
+
+            Set<UUID> newGroupIds = new HashSet<>();
+            for (KeywordGroup group : keywordGroups) {
+                newGroupIds.add(group.getId());
+                KeywordGroupMapping mapping = toKeywordGroupMapping(groupCache, group.getId());
+                if (mapping != null) {
+                    mapping.getIds().add(book.getId());
+                    groupCache.put(group.getId(), mapping);
+                }
+            }
+            if (!newGroupIds.isEmpty()) {
+                mappingCache.put(book.getId(), new ArrayList<>(newGroupIds));
             }
         }
-        mappingCache.put(book.getId(), newGroupIds);
     }
 
     @EventListener(DeleteGroupEvent.class)
@@ -118,15 +123,16 @@ public class EventExecute {
         if (groupCache == null || mappingCache == null) {
             return;
         }
-
-        Set<UUID> oldGroupIds = mappingCache.get(deleteGroupEvent.id(), Set.class);
-        if (oldGroupIds != null && !oldGroupIds.isEmpty()) {
+        Set<UUID> oldGroupIds = new HashSet<>(Optional.ofNullable(mappingCache.get(deleteGroupEvent.id(), List.class))
+                .orElse(Collections.emptyList()));
+        if (!oldGroupIds.isEmpty()) {
             for (UUID groupId : oldGroupIds) {
-                KeywordGroupMapping mapping = groupCache.get(groupId, KeywordGroupMapping.class);
+                KeywordGroupMapping mapping = toKeywordGroupMapping(groupCache, groupId);
                 if (mapping != null) {
                     mapping.getIds().removeIf(id -> id.equals(deleteGroupEvent.id()));
                     groupCache.put(groupId, mapping);
                 }
+
             }
             mappingCache.evict(deleteGroupEvent.id());
         }
@@ -141,22 +147,33 @@ public class EventExecute {
         if (groupCache == null || mappingCache == null) {
             return;
         }
-        KeywordGroupMapping mapping = groupCache.get(expiringGroup.getUuid(), KeywordGroupMapping.class);
-        if(mapping == null){
+        KeywordGroupMapping mapping = toKeywordGroupMapping(groupCache, expiringGroup.getUuid());
+        if (mapping == null) {
             return;
         }
         keywordGroupRepository.findById(mapping.getId()).ifPresent(keywordGroupRepository::delete);
-        for (Long id :mapping.getIds() ) {
-            Set<UUID> changeGroupIds = mappingCache.get(id, Set.class);
-            if(changeGroupIds == null){
+        for (Long id : mapping.getIds()) {
+            Set<UUID> changeGroupIds = new HashSet<>(Optional.ofNullable(mappingCache.get(id, List.class))
+                    .orElse(Collections.emptyList()));
+            if (changeGroupIds.isEmpty()) {
                 continue;
             }
             changeGroupIds.remove(mapping.getId());
-            mappingCache.put(id,changeGroupIds);
+            mappingCache.put(id, new ArrayList<>(changeGroupIds));
         }
 
     }
+
     private Cache getCache(String name) {
         return redisCacheManager.getCache(name);
+    }
+
+    private KeywordGroupMapping toKeywordGroupMapping(Cache groupCache, UUID groupId) {
+        ValueWrapper wrapper = groupCache.get(groupId);
+        if (wrapper == null) {
+            return null;
+        }
+        return objectMapper.convertValue(wrapper.get(),
+                KeywordGroupMapping.class);
     }
 }

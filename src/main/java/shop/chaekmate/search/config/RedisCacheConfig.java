@@ -52,7 +52,9 @@ public class RedisCacheConfig {
                 .prefixCacheNameWith("cache:");
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
         cacheConfigurations.put("group", redisCacheConfig.entryTtl(Duration.ofHours(3)));
-        cacheConfigurations.put("group-mapping", redisCacheConfig.entryTtl(Duration.ZERO));
+        RedisCacheConfiguration noTtlConfig =
+                RedisCacheConfiguration.defaultCacheConfig().disableCachingNullValues();
+        cacheConfigurations.put("group-mapping", noTtlConfig);
 
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(redisCacheConfig)
