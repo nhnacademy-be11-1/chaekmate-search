@@ -16,7 +16,7 @@ jobs:
       DOMAIN: ${{ secrets.DOMAIN_NAME }}
       PORT: ${{ secrets.PORT_NUMBER }}
       ES_URL: ${{ secrets.ES_URL }}
-      ES_USERNAME: ${{ secrets.ES_USERNAME }}
+      ES_USERNAME: ${{ secrets.ES_USERNAME }}adf
       ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
       OLLAMA_API_URL: ${{ secrets.OLLAMA_API_URL }}
       RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
@@ -24,6 +24,10 @@ jobs:
       RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
       GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      REDIS_RANGE: ${{ secrets.REDIS_RANGE }}
       EUREKA_URL_PROD: ${{ secrets.EUREKA_URL_PROD }}
 
     steps:
