@@ -21,7 +21,12 @@ spring:
     uris: ${ES_URL}
     username: ${ES_USERNAME}
     password: ${ES_PASSWORD}
-
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      password: ${REDIS_PASSWORD}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_RANGE:303}
 rabbitmq:
   exchange:
     name: cm-book-exchange

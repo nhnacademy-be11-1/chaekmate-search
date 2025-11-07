@@ -3,6 +3,10 @@ package shop.chaekmate.search.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,13 +16,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import shop.chaekmate.search.api.AiApiClient;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.dto.BookDeleteRequest;
 import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.dto.EmbeddingResponse;
+import shop.chaekmate.search.event.DeleteGroupEvent;
+import shop.chaekmate.search.event.UpdateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,9 +33,10 @@ class BookIndexServiceTest {
     BookRepository bookRepository;
     @Mock
     AiApiClient aiApiClient;
+    @Mock
+    ApplicationEventPublisher publisher;
     @InjectMocks
     BookIndexService bookIndexService;
-
     @Test
     void 삽입() {
         BookInfoRequest bookInfoRequest = new BookInfoRequest();
@@ -41,13 +48,12 @@ class BookIndexServiceTest {
         bookInfoRequest.setDescription("test");
         bookInfoRequest.setPrice(1000);
 
-        Mockito.when(bookRepository.findById(any())).thenReturn(Optional.empty());
+        when(bookRepository.findById(any())).thenReturn(Optional.empty());
         EmbeddingResponse embeddingResponse = new EmbeddingResponse();
         embeddingResponse.setEmbedding(new Float[]{0.1F, 0.2F});
-        Mockito.when(aiApiClient.createEmbedding(anyString())).thenReturn(embeddingResponse);
+        when(aiApiClient.createEmbedding(anyString())).thenReturn(embeddingResponse);
         Book book = bookIndexService.insert(bookInfoRequest);
         Assertions.assertEquals(1, (long) book.getId());
-
     }
 
     @Test
@@ -72,14 +78,14 @@ class BookIndexServiceTest {
         bookInfoRequest.setTags(List.of());
         bookInfoRequest.setDescription("test");
         bookInfoRequest.setPrice(1000);
-        Mockito.when(bookRepository.findById(any())).thenReturn(Optional.of(book));
+        when(bookRepository.findById(any())).thenReturn(Optional.of(book));
         EmbeddingResponse embeddingResponse = new EmbeddingResponse();
         embeddingResponse.setEmbedding(new Float[]{0.1F, 0.2F});
-        Mockito.when(aiApiClient.createEmbedding(anyString())).thenReturn(embeddingResponse);
+        when(aiApiClient.createEmbedding(anyString())).thenReturn(embeddingResponse);
 
         Book result = bookIndexService.update(bookInfoRequest);
         Assertions.assertEquals("zzzzz", result.getTitle());
-
+        verify(publisher, times(1)).publishEvent(any(UpdateGroupEvent.class));
     }
 
     @Test
@@ -95,10 +101,11 @@ class BookIndexServiceTest {
                 .publicationDatetime(LocalDateTime.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build();
-        Mockito.when(bookRepository.findById(any())).thenReturn(Optional.of(book));
-        Mockito.doNothing().when(bookRepository).delete(any());
+        when(bookRepository.findById(any())).thenReturn(Optional.of(book));
+        doNothing().when(bookRepository).delete(any());
         bookIndexService.delete(new BookDeleteRequest());
-        Mockito.verify(bookRepository, Mockito.times(1)).delete(any());
+        verify(bookRepository, times(1)).delete(any());
+        verify(publisher, times(1)).publishEvent(any(DeleteGroupEvent.class));
     }
 
     @Test
@@ -114,8 +121,8 @@ class BookIndexServiceTest {
                 .publicationDatetime(LocalDateTime.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build());
-        Mockito.when(bookRepository.saveAll(any())).thenReturn(mockList);
+        when(bookRepository.saveAll(any())).thenReturn(mockList);
         bookIndexService.saveAll(List.of());
-        Mockito.verify(bookRepository, Mockito.times(1)).saveAll(any());
+        verify(bookRepository, times(1)).saveAll(any());
     }
 }

@@ -2,11 +2,11 @@ package shop.chaekmate.search.api;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -43,7 +42,7 @@ class AiApiClientTest {
         Assertions.assertEquals(2, result.getEmbedding().length);
     }
     @Test
-    void llm요청성공() {
+    void 검색llm요청성공() {
         Prompt mockPrompt = new Prompt("검색어:test,keywordSearch: test1, vectorSearch:test2", null);
         when(promptTemplate.create(anyMap())).thenReturn(mockPrompt);
 

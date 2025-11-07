@@ -16,7 +16,8 @@ public class AiApiClient {
 
     static final String DEFAULT_MODEL = "bge-m3";
     private final EmbeddingSendRequest embeddingSendRequest;
-    private final PromptTemplate promptTemplate;
+    private final PromptTemplate searchPromptTemplate;
+    private final PromptTemplate groupPromptTemplate;
     private final ChatModel geminiChatModel;
 
     public EmbeddingResponse createEmbedding(String prompt) {
@@ -24,12 +25,21 @@ public class AiApiClient {
     }
 
     public String createSearch(String keyword, String keywordJson, String vectorJson) {
-        Prompt prompt = promptTemplate.create(Map.of(
+        Prompt prompt = searchPromptTemplate.create(Map.of(
                 "input", keyword,
                 "keywordSearch", keywordJson,
                 "vectorSearch", vectorJson
         ));
 
+        ChatResponse response = geminiChatModel.call(prompt);
+        return response.getResult().getOutput().getText();
+    }
+    public String groupName(String keyword , String results ,String keywordVector){
+        Prompt prompt = groupPromptTemplate.create(Map.of(
+                "keyword", keyword,
+                "results", results,
+                "keywordVector",keywordVector
+        ));
         ChatResponse response = geminiChatModel.call(prompt);
         return response.getResult().getOutput().getText();
     }
