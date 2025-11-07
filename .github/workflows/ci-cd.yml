@@ -14,7 +14,7 @@ jobs:
     env:
       SPRING_PROFILES_ACTIVE: prod
       DOMAIN: ${{ secrets.DOMAIN_NAME }}
-      PORT: ${{ secrets.PORT_NUMBER }}
+      PORT_NUMBER: ${{ secrets.PORT_NUMBER }}
       ES_URL: ${{ secrets.ES_URL }}
       ES_USERNAME: ${{ secrets.ES_USERNAME }}
       ES_PASSWORD: ${{ secrets.ES_PASSWORD }}
