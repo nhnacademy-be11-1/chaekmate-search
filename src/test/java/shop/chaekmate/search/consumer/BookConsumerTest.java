@@ -13,11 +13,14 @@ import shop.chaekmate.search.dto.BaseBookTaskDto;
 import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.dto.TaskMapping;
 import shop.chaekmate.search.task.queue.BookTaskQueue;
+import shop.chaekmate.search.task.worker.BookWaitingTask;
 
 @ExtendWith(MockitoExtension.class)
 class BookConsumerTest {
     @Mock
     BookTaskQueue<TaskMapping<?>> bookEventQueue;
+    @Mock
+    BookWaitingTask bookWaitingTask;
     @InjectMocks
     BookConsumer bookConsumer;
 

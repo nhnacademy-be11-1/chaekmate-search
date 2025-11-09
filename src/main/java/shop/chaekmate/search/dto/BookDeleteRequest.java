@@ -11,4 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BookDeleteRequest implements BaseBookTaskDto {
     long id;
+    @Override
+    public Long getId() {
+        return id;
+    }
 }

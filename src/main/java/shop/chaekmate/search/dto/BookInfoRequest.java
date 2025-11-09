@@ -18,4 +18,9 @@ public class BookInfoRequest implements BaseBookTaskDto{
     List<String> categories;
     LocalDateTime publicationDatetime;
     List<String> tags;
+    @Override
+    public Long getId() {
+        return id;
+    }
+
 }

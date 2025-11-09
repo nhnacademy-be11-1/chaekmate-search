@@ -3,6 +3,7 @@ package shop.chaekmate.search.task;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,7 @@ import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.dto.TaskMapping;
 import shop.chaekmate.search.service.BookIndexService;
 import shop.chaekmate.search.task.queue.BookTaskQueue;
+import shop.chaekmate.search.task.worker.BookWaitingTask;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -35,7 +37,8 @@ class BookTaskTest {
     BookConsumer consumer;
     @MockitoBean
     BookIndexService bookIndexService;
-
+    @MockitoSpyBean
+    BookWaitingTask bookWaitingTask;
     @MockitoSpyBean(name = "bookEventQueue")
     BookTaskQueue<TaskMapping<?>> eventQueue;
 
@@ -90,17 +93,18 @@ class BookTaskTest {
         eventQueue.clear();
         embeddingQueue.clear();
         saveQueue.clear();
+        bookWaitingTask.clear();
     }
     @Test
     void 컨슈머는_데이터를_이벤트큐에넣음(){
         consumer.consume((TaskMapping<BaseBookTaskDto>) insertEvent);
         consumer.consume((TaskMapping<BaseBookTaskDto>) updateEvent);
         consumer.consume((TaskMapping<BaseBookTaskDto>) deleteEvent);
-        consumer.consume2((TaskMapping<BaseBookTaskDto>) insertEvent);
-        consumer.consume3((TaskMapping<BaseBookTaskDto>) insertEvent);
-        verify(eventQueue, timeout(5000).times(5)).offer(any());
-        verify(eventQueue, timeout(5000).atLeast(5)).take();
-        await().atMost(5, SECONDS).until(() -> eventQueue.getSize() == 0);
+        verify(eventQueue, timeout(5000).times(3)).offer(any());
+        verify(eventQueue, timeout(5000).atLeast(3)).take();
+
+
+        await().atMost(3, SECONDS).until(() -> eventQueue.getSize() == 0);
 
     }
     @Test
@@ -116,7 +120,6 @@ class BookTaskTest {
 
         verify(saveQueue,times(1)).offer(any());
         verify(saveQueue, timeout(5000).atLeast(1)).poll();
-
     }
     @Test
     void update_이벤트는_임베딩큐를_거쳐_세이브큐에_저장(){
@@ -132,6 +135,7 @@ class BookTaskTest {
 
         verify(saveQueue,times(1)).offer(any());
         verify(saveQueue, timeout(5000).atLeast(1)).poll();
+
     }
     @Test
     void delete_이벤트는_딜리트큐에서_삭제(){
@@ -144,6 +148,20 @@ class BookTaskTest {
 
         verify(embeddingQueue,times(0)).offer(any());
         verify(saveQueue,times(0)).offer(any());
+    }
+
+
+    @Test
+    void 여러_이벤트가_순서대로_처리되는지검증(){
+        consumer.consume((TaskMapping<BaseBookTaskDto>) insertEvent);
+        consumer.consume((TaskMapping<BaseBookTaskDto>) updateEvent);
+        consumer.consume((TaskMapping<BaseBookTaskDto>) deleteEvent);
+
+        await().atMost(10, SECONDS).untilAsserted(() -> {
+            verify(bookWaitingTask, times(3)).put(any());
+            verify(bookWaitingTask, times(3)).poll(anyLong());
+        });
+
     }
 
 
