@@ -62,10 +62,10 @@ public class SearchControllerTest {
                         .param("prompt", "zzz")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].title").value("zzz"))
-                .andExpect(jsonPath("$[0].author").value("zzz"))
-                .andExpect(jsonPath("$[1].title").value("zzzzz"))
-                .andExpect(jsonPath("$[1].price").value(20000));
+                .andExpect(jsonPath("$.data[0].id").value(1L))
+                .andExpect(jsonPath("$.data[0].title").value("zzz"))
+                .andExpect(jsonPath("$.data[0].author").value("zzz"))
+                .andExpect(jsonPath("$.data[1].title").value("zzzzz"))
+                .andExpect(jsonPath("$.data[1].price").value(20000));
     }
 }
