@@ -1,8 +1,9 @@
 package shop.chaekmate.search.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +21,8 @@ public class SearchController implements SearchControllerDocs {
     private final SearchService searchService;
 
     @GetMapping
-    public ResponseEntity<List<SearchResponse>> search(@RequestParam String prompt) throws JsonProcessingException {
-        return ResponseEntity.ok(searchService.search(prompt));
+    public ResponseEntity<Page<SearchResponse>> search(@RequestParam String prompt, Pageable pageable) throws JsonProcessingException {
+        return ResponseEntity.ok(searchService.search(prompt,pageable));
     }
 
     @GetMapping("/recommendKeyword")

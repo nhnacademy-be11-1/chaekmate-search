@@ -25,6 +25,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import shop.chaekmate.search.api.AiApiClient;
 import shop.chaekmate.search.document.Book;
@@ -60,6 +63,7 @@ class SearchServiceTest {
     @Test
     void 검색_캐시미스() throws JsonProcessingException {
         String keyword = "zz";
+        Pageable pageable = PageRequest.of(0, 10);
 
         List<Book> keywordResults = List.of(Book.builder()
                 .id(1L)
@@ -90,7 +94,7 @@ class SearchServiceTest {
         when(bookRepository.searchByVector(any())).thenReturn(vectorResults);
         when(aiApiClient.createEmbedding(keyword)).thenReturn(embedding);
         when(objectMapper.writeValueAsString(any())).thenReturn("[{\"id\":1}]");
-        when(bookRepository.searchByBookIds(any())).thenReturn(keywordResults);
+        when(bookRepository.searchByBookIds(any(),any())).thenReturn(keywordResults);
         String rerankResponse = "[1]";
         when(aiApiClient.createSearch(eq(keyword), anyString(), anyString()))
                 .thenReturn(rerankResponse);
@@ -98,8 +102,8 @@ class SearchServiceTest {
         when(objectMapper.readValue(eq(rerankResponse), any(TypeReference.class)))
                 .thenReturn(List.of(1L));
         doNothing().when(publisher).publishEvent(any(CreateGroupEvent.class));
-        List<SearchResponse> books = searchService.search(keyword);
-        assertEquals(1, books.size());
+        Page<SearchResponse> books = searchService.search(keyword, pageable);
+        assertEquals(1, books.getTotalElements());
         verify(bookRepository).searchByKeyword(keyword);
         verify(bookRepository).searchByVector(any());
         verify(aiApiClient).createEmbedding(keyword);
@@ -109,6 +113,8 @@ class SearchServiceTest {
 
     @Test
     void 검색_캐시히트() throws JsonProcessingException {
+        Pageable pageable = PageRequest.of(0, 10);
+
         EmbeddingResponse embedding = new EmbeddingResponse();
         embedding.setEmbedding(new Float[]{0.1f, 0.2f, 0.3f});
         String keyword = "소설추천해줘";
@@ -132,11 +138,11 @@ class SearchServiceTest {
         when(redisCacheManager.getCache(anyString())).thenReturn(groupCache);
         when(groupCache.get(any())).thenReturn(wrapper);
         when(wrapper.get()).thenReturn(keywordGroupMapping);
-        when(bookRepository.searchByBookIds(any())).thenReturn(keywordResults);
+        when(bookRepository.searchByBookIds(any(),any())).thenReturn(keywordResults);
         when(objectMapper.convertValue(any(), eq(KeywordGroupMapping.class))).thenReturn(keywordGroupMapping);
 
-        List<SearchResponse> books = searchService.search(keyword);
-        assertEquals(1, books.size());
+        Page<SearchResponse> books = searchService.search(keyword, pageable);
+        assertEquals(1, books.getTotalElements());
         verify(aiApiClient).createEmbedding(keyword);
 
     }
