@@ -1,23 +1,7 @@
 package shop.chaekmate.search.event;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +22,16 @@ import shop.chaekmate.search.dto.GroupNameDto;
 import shop.chaekmate.search.repository.BookRepository;
 import shop.chaekmate.search.repository.KeywordGroupRepository;
 import shop.chaekmate.search.task.queue.ExpiringGroupManager;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class EventExecuteTest {
@@ -65,7 +59,7 @@ class EventExecuteTest {
     void init() {
         book = Book.builder().id(1).author("test").categories(List.of("test1", "test2")).description("test")
                 .embedding(new Float[]{0.9f, 0.2f}).price(10000).publicationDatetime(
-                        LocalDateTime.now()).tags(List.of("test", "test2")).title("test").bookImages(List.of("tset"))
+                        LocalDate.now()).tags(List.of("test", "test2")).title("test").bookImages(List.of("tset"))
                 .build();
         keywordGroup = KeywordGroup.builder().id(UUID.randomUUID()).embedding(new Float[]{0.9f}).build();
         groupCache = Mockito.mock(Cache.class);

@@ -1,20 +1,14 @@
 package shop.chaekmate.search.service;
 
-import static org.springframework.cache.Cache.ValueWrapper;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.stereotype.Service;
 import shop.chaekmate.search.api.AiApiClient;
@@ -27,7 +21,12 @@ import shop.chaekmate.search.dto.SearchResponse;
 import shop.chaekmate.search.event.CreateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
 
-@Slf4j
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.springframework.cache.Cache.ValueWrapper;
+
 @Service
 @RequiredArgsConstructor
 public class SearchService {

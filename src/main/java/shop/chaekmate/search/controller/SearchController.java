@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +23,7 @@ public class SearchController implements SearchControllerDocs {
     private final SearchService searchService;
 
     @GetMapping
-    public ResponseEntity<Page<SearchResponse>> search(@RequestParam String prompt, Pageable pageable) throws JsonProcessingException {
+    public ResponseEntity<Page<SearchResponse>> search(@RequestParam String prompt, @PageableDefault(sort = "publicationDatetime", direction = Sort.Direction.DESC) Pageable pageable) throws JsonProcessingException {
         return ResponseEntity.ok(searchService.search(prompt,pageable));
     }
 

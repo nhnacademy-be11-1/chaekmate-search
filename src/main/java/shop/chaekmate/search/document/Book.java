@@ -1,28 +1,21 @@
 package shop.chaekmate.search.document;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.DateFormat;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
-import org.springframework.data.elasticsearch.annotations.InnerField;
-import org.springframework.data.elasticsearch.annotations.Mapping;
-import org.springframework.data.elasticsearch.annotations.MultiField;
-import org.springframework.data.elasticsearch.annotations.Setting;
-import org.springframework.data.elasticsearch.annotations.WriteTypeHint;
+import org.springframework.data.elasticsearch.annotations.*;
 import shop.chaekmate.search.dto.BookInfoRequest;
 
-@Document(indexName = "books",writeTypeHint = WriteTypeHint.FALSE)
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@Document(indexName = "books", writeTypeHint = WriteTypeHint.FALSE)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setting(settingPath = "elasticsearch/settings/korean-analyzer.json")
@@ -42,65 +35,100 @@ public class Book {
 
     @Field(type = FieldType.Text, analyzer = "korean_english_analyzer")
     private String description;
+
+    @Field(type = FieldType.Text)
+    private String isbn;
+
+    @Field(type = FieldType.Text, analyzer = "korean_english_analyzer")
+    private String publisher;
+
     @Field(type = FieldType.Text)
     private List<String> bookImages;
-    @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"), otherFields = {
-            @InnerField(suffix = "keyword", type = FieldType.Keyword)})
+
+    @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"),
+            otherFields = @InnerField(suffix = "keyword", type = FieldType.Keyword))
     private List<String> categories;
 
-    @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
-    private Instant publicationDatetime;
+    @Field(type = FieldType.Date, format = DateFormat.date)
+    private LocalDate publicationDatetime;
 
-    @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"), otherFields = {
-            @InnerField(suffix = "keyword", type = FieldType.Keyword)})
+    @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"),
+            otherFields = @InnerField(suffix = "keyword", type = FieldType.Keyword))
     private List<String> tags;
+
+    @Field(type = FieldType.Text, analyzer = "korean_english_analyzer")
+    private String reviewSummary;
+
+    @Field(type = FieldType.Integer)
+    private Integer reviewCnt;
+
+    @Field(type = FieldType.Double)
+    private Double rating;
 
     @Field(type = FieldType.Dense_Vector, dims = 1024)
     private Float[] embedding;
 
-    @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
-    private Instant createdAt;
-    @Field(type = FieldType.Date, format = DateFormat.date_optional_time)
-    private Instant updateAt;
+    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
+    private LocalDateTime createdAt;
+
+    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
+    private LocalDateTime updatedAt;
 
     @Builder
-    Book(long id, String title, String author, int price, String description, List<String> bookImages,
-         List<String> categories, LocalDateTime publicationDatetime, List<String> tags, Float[] embedding) {
+    public Book(long id, String title, String author, Integer price, String description,
+                String isbn, String publisher, List<String> bookImages,
+                List<String> categories, LocalDate publicationDatetime,
+                List<String> tags, String reviewSummary, Double rating, Float[] embedding, Integer reviewCnt) {
         this.id = id;
         this.title = title;
         this.author = author;
         this.price = price;
         this.description = description;
-        this.bookImages = bookImages;
-        this.categories = categories == null ? new ArrayList<>() : categories;
-        this.publicationDatetime =
-                publicationDatetime != null ? publicationDatetime.toInstant(ZoneOffset.UTC) : Instant.now();
-        this.tags = tags == null ? new ArrayList<>() : tags;
+        this.isbn = isbn;
+        this.publisher = publisher;
+        this.bookImages = bookImages != null ? bookImages : new ArrayList<>();
+        this.categories = categories != null ? categories : new ArrayList<>();
+        this.publicationDatetime = publicationDatetime;
+        this.tags = tags != null ? tags : new ArrayList<>();
+        this.reviewSummary = reviewSummary;
+        this.rating = rating != null ? rating : 0.0;
         this.embedding = embedding;
-        this.createdAt = LocalDateTime.now().toInstant(ZoneOffset.UTC);
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.reviewCnt = reviewCnt;
     }
 
     public void update(BookInfoRequest bookInfoRequest, Float[] embedding) {
-        this.title = bookInfoRequest.getTitle() == null ? title : bookInfoRequest.getTitle();
-        this.author = bookInfoRequest.getAuthor() == null ? author : bookInfoRequest.getAuthor();
-        this.price = bookInfoRequest.getPrice() == null ? price : bookInfoRequest.getPrice();
-        this.description = bookInfoRequest.getDescription() == null ? description : bookInfoRequest.getDescription();
-        this.categories = bookInfoRequest.getCategories() == null ? categories : bookInfoRequest.getCategories();
-        this.tags = bookInfoRequest.getTags() == null ? tags : bookInfoRequest.getTags();
-        this.embedding = embedding != null && embedding.length > 0 ? embedding : this.embedding;
-        this.updateAt = LocalDateTime.now().toInstant(ZoneOffset.UTC);
-        this.bookImages = bookInfoRequest.getBookImages() == null ? bookImages : bookInfoRequest.getBookImages();
-
+        this.title = bookInfoRequest.getTitle() != null ? bookInfoRequest.getTitle() : this.title;
+        this.author = bookInfoRequest.getAuthor() != null ? bookInfoRequest.getAuthor() : this.author;
+        this.price = bookInfoRequest.getPrice() != null ? bookInfoRequest.getPrice() : this.price;
+        this.description = bookInfoRequest.getDescription() != null ? bookInfoRequest.getDescription() : this.description;
+        this.isbn = bookInfoRequest.getIsbn() != null ? bookInfoRequest.getIsbn() : this.isbn;
+        this.publisher = bookInfoRequest.getPublisher() != null ? bookInfoRequest.getPublisher() : this.publisher;
+        this.bookImages = bookInfoRequest.getBookImages() != null ? bookInfoRequest.getBookImages() : this.bookImages;
+        this.categories = bookInfoRequest.getCategories() != null ? bookInfoRequest.getCategories() : this.categories;
+        this.publicationDatetime = bookInfoRequest.getPublicationDatetime() != null ? bookInfoRequest.getPublicationDatetime() : this.publicationDatetime;
+        this.tags = bookInfoRequest.getTags() != null ? bookInfoRequest.getTags() : this.tags;
+        this.reviewSummary = bookInfoRequest.getReviewSummary() != null ? bookInfoRequest.getReviewSummary() : this.reviewSummary;
+        this.reviewCnt = bookInfoRequest.getReviewCnt() == 0 ? this.reviewCnt : bookInfoRequest.getReviewCnt();
+        this.rating = (bookInfoRequest.getRating() != null && bookInfoRequest.getRating() > 0.0)
+                ? bookInfoRequest.getRating()
+                : this.rating;
+        this.embedding = (embedding != null && embedding.length > 0) ? embedding : this.embedding;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Map<String, Object> toJson() {
         return Map.of(
                 "id", id,
-                "title", title,
-                "author", author,
-                "price", price,
-                "categories", categories,
-                "tags", tags
+                "title", Optional.ofNullable(title).orElse(""),
+                "author", Optional.ofNullable(author).orElse(""),
+                "price", Optional.ofNullable(price).orElse(0),
+                "categories", Optional.ofNullable(categories).orElse(List.of()),
+                "tags", Optional.ofNullable(tags).orElse(List.of()),
+                "rating", Optional.ofNullable(rating).orElse(0.0),
+                "reviewSummary", Optional.ofNullable(reviewSummary).orElse(""),
+                "reviewCnt", Optional.ofNullable(reviewCnt).orElse(0)
         );
     }
 }

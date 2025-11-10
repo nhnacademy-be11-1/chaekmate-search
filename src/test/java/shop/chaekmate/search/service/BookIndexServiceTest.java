@@ -1,16 +1,6 @@
 package shop.chaekmate.search.service;
 
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +16,14 @@ import shop.chaekmate.search.dto.EmbeddingResponse;
 import shop.chaekmate.search.event.DeleteGroupEvent;
 import shop.chaekmate.search.event.UpdateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class BookIndexServiceTest {
@@ -66,7 +64,7 @@ class BookIndexServiceTest {
                 .description("zzzzz")
                 .categories(List.of("zz", "zzz"))
                 .tags(List.of("zzz", "zzz"))
-                .publicationDatetime(LocalDateTime.now())
+                .publicationDatetime(LocalDate.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build();
 
@@ -78,6 +76,7 @@ class BookIndexServiceTest {
         bookInfoRequest.setTags(List.of());
         bookInfoRequest.setDescription("test");
         bookInfoRequest.setPrice(1000);
+        bookInfoRequest.setReviewCnt(0);
         when(bookRepository.findById(any())).thenReturn(Optional.of(book));
         EmbeddingResponse embeddingResponse = new EmbeddingResponse();
         embeddingResponse.setEmbedding(new Float[]{0.1F, 0.2F});
@@ -98,7 +97,7 @@ class BookIndexServiceTest {
                 .description("zzzzz")
                 .categories(List.of("zz", "zzz"))
                 .tags(List.of("zzz", "zzz"))
-                .publicationDatetime(LocalDateTime.now())
+                .publicationDatetime(LocalDate.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build();
         when(bookRepository.findById(any())).thenReturn(Optional.of(book));
@@ -118,7 +117,7 @@ class BookIndexServiceTest {
                 .description("zzzzz")
                 .categories(List.of("zz", "zzz"))
                 .tags(List.of("zzz", "zzz"))
-                .publicationDatetime(LocalDateTime.now())
+                .publicationDatetime(LocalDate.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build());
         when(bookRepository.saveAll(any())).thenReturn(mockList);

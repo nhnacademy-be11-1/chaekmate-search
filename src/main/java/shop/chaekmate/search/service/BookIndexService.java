@@ -1,6 +1,5 @@
 package shop.chaekmate.search.service;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -15,6 +14,7 @@ import shop.chaekmate.search.dto.EmbeddingResponse;
 import shop.chaekmate.search.event.DeleteGroupEvent;
 import shop.chaekmate.search.event.UpdateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +34,15 @@ public class BookIndexService {
                 .author(bookInfoRequest.getAuthor())
                 .price(bookInfoRequest.getPrice())
                 .description(bookInfoRequest.getDescription())
+                .isbn(bookInfoRequest.getIsbn())
+                .publisher(bookInfoRequest.getPublisher())
                 .bookImages(bookInfoRequest.getBookImages())
                 .categories(bookInfoRequest.getCategories())
                 .publicationDatetime(bookInfoRequest.getPublicationDatetime())
                 .tags(bookInfoRequest.getTags())
+                .reviewSummary(bookInfoRequest.getReviewSummary())
+                .reviewCnt(bookInfoRequest.getReviewCnt())
+                .rating(bookInfoRequest.getRating())
                 .embedding(embedding)
                 .build();
     }
@@ -50,7 +55,6 @@ public class BookIndexService {
         bookIndex.update(bookInfoRequest, embeddingResponse.getEmbedding());
         publisher.publishEvent(new UpdateGroupEvent(embeddingResponse, bookIndex));
         return bookIndex;
-
     }
 
 

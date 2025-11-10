@@ -22,7 +22,6 @@ public class PromptConfig {
                 출력 규칙:
                 - 숫자만 담긴 배열로 반환한다. 배열만 반환한다.
                 - 배열 이외의 어떤 문자(설명, 코드블록, 주석 등)도 출력하지 않는다.
-                
                 keywordSearch:
                 {keywordSearch}
                 

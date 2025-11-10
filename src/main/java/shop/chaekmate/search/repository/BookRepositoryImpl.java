@@ -89,7 +89,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                         )
                         .from(pageable.getPageNumber() * pageable.getPageSize())
                         .size(pageable.getPageSize());
-                pageable.getSort().stream().findFirst().ifPresent(order ->
+                        pageable.getSort().stream().findFirst().ifPresent(order ->
                         s.sort(so -> so.field(f -> f
                                 .field(order.getProperty())
                                 .order(order.isAscending() ? SortOrder.Asc : SortOrder.Desc)

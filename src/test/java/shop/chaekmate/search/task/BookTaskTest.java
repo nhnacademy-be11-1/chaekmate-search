@@ -1,17 +1,5 @@
 package shop.chaekmate.search.task;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +17,15 @@ import shop.chaekmate.search.dto.TaskMapping;
 import shop.chaekmate.search.service.BookIndexService;
 import shop.chaekmate.search.task.queue.BookTaskQueue;
 import shop.chaekmate.search.task.worker.BookWaitingTask;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -65,7 +62,7 @@ class BookTaskTest {
         bookInfoRequestInsert.setAuthor("test");
         bookInfoRequestInsert.setCategories(List.of());
         bookInfoRequestInsert.setTags(List.of());
-        bookInfoRequestInsert.setPublicationDatetime(LocalDateTime.now());
+        bookInfoRequestInsert.setPublicationDatetime(LocalDate.now());
         bookInfoRequestInsert.setTitle("test");
 
         bookInfoRequestUpdate.setPrice(10000);
@@ -76,10 +73,10 @@ class BookTaskTest {
         bookInfoRequestUpdate.setAuthor("test");
         bookInfoRequestUpdate.setCategories(List.of());
         bookInfoRequestUpdate.setTags(List.of());
-        bookInfoRequestUpdate.setPublicationDatetime(LocalDateTime.now());
+        bookInfoRequestUpdate.setPublicationDatetime(LocalDate.now());
         bookInfoRequestUpdate.setTitle("test");
-        Book book1 = Book.builder().id(1).bookImages(List.of()).author("test").categories(List.of()).description("test").embedding(new Float[]{0.1F,}).price(10000).publicationDatetime(LocalDateTime.now()).tags(List.of()).title("test").build();
-        Book book2 = Book.builder().id(1).bookImages(List.of()).author("updatetest").categories(List.of()).description("updatetest").embedding(new Float[]{0.1F,}).price(10000).publicationDatetime(LocalDateTime.now()).tags(List.of()).title("updatetest").build();
+        Book book1 = Book.builder().id(1).bookImages(List.of()).author("test").categories(List.of()).description("test").embedding(new Float[]{0.1F,}).price(10000).publicationDatetime(LocalDate.now()).tags(List.of()).title("test").build();
+        Book book2 = Book.builder().id(1).bookImages(List.of()).author("updatetest").categories(List.of()).description("updatetest").embedding(new Float[]{0.1F,}).price(10000).publicationDatetime(LocalDate.now()).tags(List.of()).title("updatetest").build();
 
         bookDeleteRequestDelete.setId(1);
         this.insertEvent = new TaskMapping<>(EventType.INSERT,bookInfoRequestInsert);

@@ -1,21 +1,8 @@
 package shop.chaekmate.search.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +25,15 @@ import shop.chaekmate.search.dto.RecommendKeywordResponse;
 import shop.chaekmate.search.dto.SearchResponse;
 import shop.chaekmate.search.event.CreateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SearchServiceTest {
@@ -73,7 +69,13 @@ class SearchServiceTest {
                 .description("zzzzz")
                 .categories(List.of("zz", "zzz"))
                 .tags(List.of("zzz", "zzz"))
-                .publicationDatetime(LocalDateTime.now())
+                .publicationDatetime(LocalDate.now())
+                .publisher("")
+                .isbn("")
+                .rating(0.0)
+                .reviewCnt(1)
+                .reviewSummary("test")
+
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build());
         List<Book> vectorResults = List.of(Book.builder()
@@ -84,7 +86,7 @@ class SearchServiceTest {
                 .description("zzzzz")
                 .categories(List.of("zz", "zzz"))
                 .tags(List.of("zzz", "zzz"))
-                .publicationDatetime(LocalDateTime.now())
+                .publicationDatetime(LocalDate.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build());
         EmbeddingResponse embedding = new EmbeddingResponse();
@@ -126,7 +128,8 @@ class SearchServiceTest {
                 .description("zzzzz")
                 .categories(List.of("zz", "zzz"))
                 .tags(List.of("zzz", "zzz"))
-                .publicationDatetime(LocalDateTime.now())
+                .reviewCnt(0)
+                .publicationDatetime(LocalDate.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build());
         Cache groupCache = mock(Cache.class);
