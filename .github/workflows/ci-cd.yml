@@ -100,4 +100,18 @@ jobs:
           script: |
             export DOMAIN_NAME="${{ secrets.DOMAIN_NAME }}"
             export PORT_NUMBER="${{ secrets.PORT_NUMBER }}"
+            export ES_URL="${{ secrets.ES_URL }}"
+            export ES_USERNAME="${{ secrets.ES_USERNAME }}"
+            export ES_PASSWORD="${{ secrets.ES_PASSWORD }}"
+            export OLLAMA_API_URL="${{ secrets.OLLAMA_API_URL }}"
+            export RABBITMQ_HOST="${{ secrets.RABBITMQ_HOST }}"
+            export RABBITMQ_USERNAME="${{ secrets.RABBITMQ_USERNAME }}"
+            export RABBITMQ_PASSWORD="${{ secrets.RABBITMQ_PASSWORD }}"
+            export GCP_PROJECT_ID="${{ secrets.GCP_PROJECT_ID }}"
+            export GOOGLE_APPLICATION_CREDENTIALS="${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+            export REDIS_HOST="${{ secrets.REDIS_HOST }}"
+            export REDIS_PASSWORD="${{ secrets.REDIS_PASSWORD }}"
+            export REDIS_PORT="${{ secrets.REDIS_PORT }}"
+            export REDIS_RANGE="${{ secrets.REDIS_RANGE }}"
+            export EUREKA_URL_PROD="${{ secrets.EUREKA_URL_PROD }}"
             bash -lc ./startup.sh
