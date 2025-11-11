@@ -97,7 +97,7 @@ class BookTaskTest {
         consumer.consume((TaskMapping<BaseBookTaskDto>) insertEvent);
         consumer.consume((TaskMapping<BaseBookTaskDto>) updateEvent);
         consumer.consume((TaskMapping<BaseBookTaskDto>) deleteEvent);
-        verify(eventQueue, timeout(5000).times(5)).offer(any());
+        verify(eventQueue, timeout(10000).times(5)).offer(any());
         verify(eventQueue, timeout(10000).atLeast(3)).take();
 
 

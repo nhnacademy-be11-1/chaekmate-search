@@ -1,8 +1,22 @@
 package shop.chaekmate.search.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,19 +35,9 @@ import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.document.KeywordGroup;
 import shop.chaekmate.search.document.KeywordGroupMapping;
 import shop.chaekmate.search.dto.EmbeddingResponse;
-import shop.chaekmate.search.dto.RecommendKeywordResponse;
 import shop.chaekmate.search.dto.SearchResponse;
 import shop.chaekmate.search.event.CreateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class SearchServiceTest {
@@ -100,6 +104,7 @@ class SearchServiceTest {
         String rerankResponse = "[1]";
         when(aiApiClient.createSearch(eq(keyword), anyString(), anyString()))
                 .thenReturn(rerankResponse);
+        when(aiApiClient.rerank(anyString(),anyList())).thenReturn(vectorResults);
 
         when(objectMapper.readValue(eq(rerankResponse), any(TypeReference.class)))
                 .thenReturn(List.of(1L));
@@ -135,7 +140,7 @@ class SearchServiceTest {
         Cache groupCache = mock(Cache.class);
         UUID uuid = UUID.randomUUID();
         KeywordGroup keywordGroup = KeywordGroup.builder().id(uuid).embedding(new Float[]{0.9f}).build();
-        KeywordGroupMapping keywordGroupMapping = new KeywordGroupMapping(uuid, List.of(1L, 2L), "소설추천", 1);
+        KeywordGroupMapping keywordGroupMapping = new KeywordGroupMapping(uuid, List.of(1L, 2L),  1);
         when(bookRepository.searchByKeywordGroupVector(any(), anyInt())).thenReturn(List.of(keywordGroup));
         when(aiApiClient.createEmbedding(keyword)).thenReturn(embedding);
         when(redisCacheManager.getCache(anyString())).thenReturn(groupCache);
@@ -148,29 +153,6 @@ class SearchServiceTest {
         assertEquals(1, books.getTotalElements());
         verify(aiApiClient).createEmbedding(keyword);
 
-    }
-
-    @Test
-    void 키워드_추천() {
-        String keyword = "소설";
-        UUID uuid = UUID.randomUUID();
-        List<KeywordGroup> keywordGroups = List.of(
-                KeywordGroup.builder().id(uuid).embedding(new Float[]{0.1F}).build());
-        KeywordGroupMapping keywordGroupMapping = new KeywordGroupMapping(uuid, List.of(1L, 2L), "소설추천",
-                1);
-        Cache groupCache = mock(Cache.class);
-        when(redisCacheManager.getCache(anyString())).thenReturn(groupCache);
-
-        EmbeddingResponse embedding = new EmbeddingResponse();
-        embedding.setEmbedding(new Float[]{0.1f, 0.2f, 0.3f});
-        when(aiApiClient.createEmbedding(keyword)).thenReturn(embedding);
-        when(bookRepository.searchByKeywordGroupVector(any(), anyInt())).thenReturn(keywordGroups);
-        when(wrapper.get()).thenReturn(keywordGroupMapping);
-        when(groupCache.get(any(UUID.class))).thenReturn(wrapper);
-        when(objectMapper.convertValue(any(), eq(KeywordGroupMapping.class))).thenReturn(keywordGroupMapping);
-        RecommendKeywordResponse recommendKeywordResponse = searchService.recommendKeyword(keyword);
-        assertEquals(1, recommendKeywordResponse.recommendKeyword().size());
-        assertEquals("소설추천", recommendKeywordResponse.recommendKeyword().getFirst());
     }
 
 }

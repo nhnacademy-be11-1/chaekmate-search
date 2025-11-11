@@ -11,7 +11,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import shop.chaekmate.search.dto.RecommendKeywordResponse;
 import shop.chaekmate.search.dto.SearchResponse;
 
 @Tag(name = "검색 API", description = "검색 API")
@@ -20,12 +19,8 @@ public interface SearchControllerDocs {
     @ApiResponse(responseCode = "200", description = "검색 성공")
     @GetMapping("/search")
     ResponseEntity<Page<SearchResponse>> search(@RequestParam String prompt,
-                                                @PageableDefault(sort = "price", direction = Sort.Direction.ASC) Pageable pageable) throws JsonProcessingException;
-
-    @Operation(summary = "키워드추천", description = "키워드추천")
-    @ApiResponse(responseCode = "200", description = "키워드추천")
-    @GetMapping("/search/recommendKeyword")
-    ResponseEntity<RecommendKeywordResponse> recommendKeyword(@RequestParam String prompt)
+                                                @PageableDefault(sort = "price", direction = Sort.Direction.ASC) Pageable pageable)
             throws JsonProcessingException;
+
 
 }

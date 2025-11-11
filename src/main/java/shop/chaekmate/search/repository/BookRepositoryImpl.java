@@ -123,7 +123,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
             );
 
             return response.hits().hits().stream()
-                    .filter(hit -> hit.score() != null && hit.score() >= 0.78f)
+                    .filter(hit -> hit.score() != null && hit.score() >= 0.89f)
                     .sorted((a, b) -> Double.compare(b.score(), a.score()))
                     .limit(k)
                     .map(Hit::source)

@@ -90,12 +90,12 @@ public class Book {
         this.categories = categories != null ? categories : new ArrayList<>();
         this.publicationDatetime = publicationDatetime;
         this.tags = tags != null ? tags : new ArrayList<>();
-        this.reviewSummary = reviewSummary;
+        this.reviewSummary = reviewSummary == null || reviewSummary.isEmpty() ? "":reviewSummary;
         this.rating = rating != null ? rating : 0.0;
         this.embedding = embedding;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-        this.reviewCnt = reviewCnt;
+        this.reviewCnt = reviewCnt == null ? 0 : reviewCnt;
     }
 
     public void update(BookInfoRequest bookInfoRequest, Float[] embedding) {
