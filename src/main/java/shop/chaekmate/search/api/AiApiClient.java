@@ -48,7 +48,7 @@ public class AiApiClient {
                 .sorted(Comparator.comparingDouble(SearchRerankItem::score).reversed())
                 .toList();
 
-        int cutoff = (int) Math.ceil(sorted.size() * 0.8); // 상위 80%
+        int cutoff = (int) Math.ceil(sorted.size() * 0.8);
         List<SearchRerankItem> topItems = sorted.subList(0, cutoff);
 
         return topItems.stream()
