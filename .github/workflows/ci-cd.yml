@@ -29,7 +29,7 @@ jobs:
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
       REDIS_RANGE: ${{ secrets.REDIS_RANGE }}
       EUREKA_URL_PROD: ${{ secrets.EUREKA_URL_PROD }}
-
+      RERANK_API_URL: ${{ secrets.RERANK_API_URL }}
     steps:
       # Step.1 코드 체크아웃
       - uses: actions/checkout@v3
@@ -100,4 +100,5 @@ jobs:
           script: |
             export DOMAIN="${{ env.DOMAIN }}"
             export PORT_NUMBER="${{ env.PORT_NUMBER }}"
+            export RERANK_API_URL="${{ secrets.RERANK_API_URL }}"
             bash -lc ./startup.sh
