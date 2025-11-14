@@ -25,14 +25,6 @@ spring:
           chat:
             options:
               model: gemini-2.5-flash
-ollama:
-  api:
-    url: localhost
-
-rerank:
-  api:
-    url: localhost
-
 
 rabbitmq:
   exchange:
@@ -40,7 +32,6 @@ rabbitmq:
   queues:
     queue-names:  cm-test-book-1, cm-test-book-2, cm-test-book-3
     routing-keys:  cm-test-book-key-1, cm-test-book-key-2, cm-test-book-key-3
-
 
 ollama:
   api:
