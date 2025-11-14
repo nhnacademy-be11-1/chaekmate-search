@@ -1,8 +1,11 @@
 package shop.chaekmate.search.api;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -41,18 +44,41 @@ public class AiApiClient {
     }
 
     public List<Book> rerank(String keyword, List<Book> vectorBooks) {
-        SearchRerankRequest request = new SearchRerankRequest(keyword,vectorBooks.stream().map(Book::getDescription).toList());
 
-        List<SearchRerankItem> resp = rerankSendRequest.rerank(request);
+        if (vectorBooks == null || vectorBooks.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> texts = vectorBooks.stream()
+                .map(b -> Optional.ofNullable(b.getDescription()).orElse(""))
+                .toList();
+
+        if (texts.stream().allMatch(String::isBlank)) {
+            return vectorBooks;
+        }
+        List<SearchRerankItem> resp = rerankSendRequest.rerank(
+                new SearchRerankRequest(keyword, texts)
+        );
+
+        if (resp == null || resp.isEmpty()) {
+            return vectorBooks;
+        }
+
         List<SearchRerankItem> sorted = resp.stream()
                 .sorted(Comparator.comparingDouble(SearchRerankItem::score).reversed())
                 .toList();
 
-        int cutoff = (int) Math.ceil(sorted.size() * 0.8);
+        int cutoff = Math.max(1, (int) Math.ceil(sorted.size() * 0.8));
         List<SearchRerankItem> topItems = sorted.subList(0, cutoff);
 
-        return topItems.stream()
-                .map(r -> vectorBooks.get(r.index()))
-                .toList();
+        List<Book> result = new ArrayList<>();
+        for (SearchRerankItem item : topItems) {
+            int idx = item.index();
+            if (idx >= 0 && idx < vectorBooks.size()) {
+                result.add(vectorBooks.get(idx));
+            }
+        }
+
+        return result;
     }
 }
