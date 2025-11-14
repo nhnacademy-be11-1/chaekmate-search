@@ -23,7 +23,6 @@ public class BookWaitingTask {
         ConcurrentLinkedQueue<TaskMapping<?>> queue =
                 bookWaitingTaskMap.computeIfAbsent(bookId, id -> new ConcurrentLinkedQueue<>());
         queue.offer(waitingTask);
-        System.out.println();
     }
 
 
