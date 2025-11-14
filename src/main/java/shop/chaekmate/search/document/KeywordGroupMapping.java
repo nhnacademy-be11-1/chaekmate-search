@@ -13,6 +13,5 @@ import lombok.NoArgsConstructor;
 public class KeywordGroupMapping {
     private UUID id;
     private List<Long> ids;
-    private String groupName;
     private long hitCnt;
 }

@@ -12,4 +12,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = BookInfoRequest.class, name = "BOOK_INFO"),
         @JsonSubTypes.Type(value = BookDeleteRequest.class, name = "BOOK_DELETE")
 })
-public interface BaseBookTaskDto {}
+public interface BaseBookTaskDto {
+    Long getId();
+}

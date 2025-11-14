@@ -1,6 +1,7 @@
 package shop.chaekmate.search.task.worker;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.dto.TaskMapping;
@@ -12,14 +13,16 @@ import shop.chaekmate.search.task.queue.BookTaskQueueRegistry;
 @Slf4j
 public class BookEmbeddingThread implements Runnable {
     private final BookTaskQueue<TaskMapping<BookInfoRequest>> bookTaskQueue;
-    private final BookTaskQueueRegistry bookTaskQueueRegistry;
+    private final BookTaskQueueRegistry<TaskMapping<Book>> bookTaskQueueRegistry;
     private final TaskExecutorRegistry taskExecutorRegistry;
+    private final BookWaitingTask bookWaitingTask;
 
     public BookEmbeddingThread(BookTaskQueue<TaskMapping<BookInfoRequest>> bookTaskQueue,
-                               BookTaskQueueRegistry bookTaskQueueRegistry, TaskExecutorRegistry taskExecutorRegistry) {
+                               BookTaskQueueRegistry<TaskMapping<Book>> bookTaskQueueRegistry, TaskExecutorRegistry taskExecutorRegistry, BookWaitingTask bookWaitingTask) {
         this.bookTaskQueue = bookTaskQueue;
         this.bookTaskQueueRegistry = bookTaskQueueRegistry;
         this.taskExecutorRegistry = taskExecutorRegistry;
+        this.bookWaitingTask = bookWaitingTask;
     }
 
     @Override
@@ -29,10 +32,15 @@ public class BookEmbeddingThread implements Runnable {
                 TaskMapping<BookInfoRequest> task = bookTaskQueue.take();
                 BookTaskExecutor<TaskMapping<BookInfoRequest>, TaskMapping<Book>> bookTaskExecutor = taskExecutorRegistry.get(
                         task.getEventType());
-                TaskMapping<Book> taskMapping = bookTaskExecutor.execute(task);
-                BookTaskQueue<TaskMapping<Book>> nextQueue = bookTaskQueueRegistry.getQueue(taskMapping.getEventType());
-                nextQueue.offer(taskMapping);
-            } catch (Exception e) {
+                try {
+                    TaskMapping<Book> nextTask = bookTaskExecutor.execute(task);
+                    BookTaskQueue<TaskMapping<Book>> nextQueue =
+                            bookTaskQueueRegistry.getQueue(nextTask.getEventType());
+                    nextQueue.offer(nextTask);
+                } finally {
+                    bookWaitingTask.poll(task.getTaskData().getId());
+                }
+            }catch (Exception e){
                 log.error("Book embedding thread error", e);
             }
         }

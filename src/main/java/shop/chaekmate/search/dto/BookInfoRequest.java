@@ -1,10 +1,11 @@
 package shop.chaekmate.search.dto;
 
 
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,8 +15,18 @@ public class BookInfoRequest implements BaseBookTaskDto{
     String author;
     Integer price;
     String description;
-    List<String> bookImages;
+    String isbn;
+    String publisher;
+    String bookImages;
     List<String> categories;
-    LocalDateTime publicationDatetime;
+    LocalDate publicationDatetime;
     List<String> tags;
+    String reviewSummary;
+    Double rating;
+    Integer reviewCnt;
+    @Override
+    public Long getId() {
+        return id;
+    }
+
 }

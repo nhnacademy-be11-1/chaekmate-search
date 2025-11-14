@@ -42,6 +42,10 @@ ollama:
   api:
     url: ${OLLAMA_API_URL}
 
+rerank:
+  api:
+    url: ${RERANK_API_URL}
+
 logging:
   level:
     root: info

@@ -1,5 +1,6 @@
 package shop.chaekmate.search.repository;
 
+import org.springframework.data.domain.Pageable;
 import shop.chaekmate.search.document.Book;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public interface BookRepositoryCustom {
 
     List<Book> searchByVector(EmbeddingResponse embedding);
 
-    List<Book> searchByBookIds(List<Long> ids);
+    List<Book> searchByBookIds(List<Long> ids, Pageable pageable);
 
     List<KeywordGroup> searchByKeywordGroupVector(EmbeddingResponse embedding,int k );
 }

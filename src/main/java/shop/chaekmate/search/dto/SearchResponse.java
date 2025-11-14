@@ -4,8 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import shop.chaekmate.search.document.Book;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -16,11 +15,14 @@ public class SearchResponse {
     String author;
     Integer price;
     String description;
-    List<String> bookImages;
+    String bookImages;
     List<String> categories;
-    LocalDateTime publicationDatetime;
+    LocalDate publicationDatetime;
     List<String> tags;
-
+    String reviewSummary;
+    int reviewCnt;
+    double rating;
+    String publisher;
     public SearchResponse(Book book){
         this.id= book.getId();
         this.title = book.getTitle();
@@ -29,7 +31,11 @@ public class SearchResponse {
         this.description = book.getDescription();
         this.bookImages = book.getBookImages();
         this.categories = book.getCategories();
-        this.publicationDatetime =  LocalDateTime.ofInstant(book.getPublicationDatetime(), ZoneId.of("Asia/Seoul"));
+        this.publicationDatetime =  book.getPublicationDatetime();
+        this.reviewSummary = book.getReviewSummary();
+        this.reviewCnt = book.getReviewCnt();
+        this.rating = book.getRating();
+        this.publisher =  book.getPublisher();
         this.tags = book.getTags();
     }
 

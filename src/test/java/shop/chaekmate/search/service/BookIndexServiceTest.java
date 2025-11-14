@@ -1,16 +1,6 @@
 package shop.chaekmate.search.service;
 
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,6 +17,14 @@ import shop.chaekmate.search.event.DeleteGroupEvent;
 import shop.chaekmate.search.event.UpdateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(MockitoExtension.class)
 class BookIndexServiceTest {
     @Mock
@@ -42,7 +40,7 @@ class BookIndexServiceTest {
         BookInfoRequest bookInfoRequest = new BookInfoRequest();
         bookInfoRequest.setId(1);
         bookInfoRequest.setAuthor("test");
-        bookInfoRequest.setBookImages(List.of());
+        bookInfoRequest.setBookImages("test");
         bookInfoRequest.setCategories(List.of());
         bookInfoRequest.setTags(List.of());
         bookInfoRequest.setDescription("test");
@@ -66,14 +64,14 @@ class BookIndexServiceTest {
                 .description("zzzzz")
                 .categories(List.of("zz", "zzz"))
                 .tags(List.of("zzz", "zzz"))
-                .publicationDatetime(LocalDateTime.now())
+                .publicationDatetime(LocalDate.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build();
 
         BookInfoRequest bookInfoRequest = new BookInfoRequest();
         bookInfoRequest.setId(1);
         bookInfoRequest.setAuthor("test");
-        bookInfoRequest.setBookImages(List.of());
+        bookInfoRequest.setBookImages("test");
         bookInfoRequest.setCategories(List.of());
         bookInfoRequest.setTags(List.of());
         bookInfoRequest.setDescription("test");
@@ -98,7 +96,7 @@ class BookIndexServiceTest {
                 .description("zzzzz")
                 .categories(List.of("zz", "zzz"))
                 .tags(List.of("zzz", "zzz"))
-                .publicationDatetime(LocalDateTime.now())
+                .publicationDatetime(LocalDate.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build();
         when(bookRepository.findById(any())).thenReturn(Optional.of(book));
@@ -118,7 +116,7 @@ class BookIndexServiceTest {
                 .description("zzzzz")
                 .categories(List.of("zz", "zzz"))
                 .tags(List.of("zzz", "zzz"))
-                .publicationDatetime(LocalDateTime.now())
+                .publicationDatetime(LocalDate.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build());
         when(bookRepository.saveAll(any())).thenReturn(mockList);

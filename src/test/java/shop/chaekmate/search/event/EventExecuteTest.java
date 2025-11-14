@@ -2,7 +2,6 @@ package shop.chaekmate.search.event;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -10,10 +9,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,13 +26,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import shop.chaekmate.search.api.AiApiClient;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.document.ExpiringGroup;
 import shop.chaekmate.search.document.KeywordGroup;
 import shop.chaekmate.search.document.KeywordGroupMapping;
 import shop.chaekmate.search.dto.EmbeddingResponse;
-import shop.chaekmate.search.dto.GroupNameDto;
 import shop.chaekmate.search.repository.BookRepository;
 import shop.chaekmate.search.repository.KeywordGroupRepository;
 import shop.chaekmate.search.task.queue.ExpiringGroupManager;
@@ -43,8 +39,6 @@ import shop.chaekmate.search.task.queue.ExpiringGroupManager;
 class EventExecuteTest {
     @Mock
     KeywordGroupRepository keywordGroupRepository;
-    @Mock
-    AiApiClient aiApiClient;
     @Mock
     RedisCacheManager redisCacheManager;
     @Mock
@@ -61,11 +55,12 @@ class EventExecuteTest {
     Cache groupCache;
     Cache groupMappingCache;
     ValueWrapper wrapper;
+
     @BeforeEach
     void init() {
         book = Book.builder().id(1).author("test").categories(List.of("test1", "test2")).description("test")
                 .embedding(new Float[]{0.9f, 0.2f}).price(10000).publicationDatetime(
-                        LocalDateTime.now()).tags(List.of("test", "test2")).title("test").bookImages(List.of("tset"))
+                        LocalDate.now()).tags(List.of("test", "test2")).title("test").bookImages("tset")
                 .build();
         keywordGroup = KeywordGroup.builder().id(UUID.randomUUID()).embedding(new Float[]{0.9f}).build();
         groupCache = Mockito.mock(Cache.class);
@@ -77,19 +72,9 @@ class EventExecuteTest {
     }
 
     @Test
-    void 그룹생성이벤트() throws JsonProcessingException {
-        CreateGroupEvent createGroupEvent = new CreateGroupEvent("소설책추천해줘", List.of(book), List.of(1L),
+    void 그룹생성이벤트() {
+        CreateGroupEvent createGroupEvent = new CreateGroupEvent(List.of(book), List.of(1L),
                 new Float[]{0.9F});
-        when(objectMapper.writeValueAsString(any()))
-                .thenReturn("mocked-json");
-        when(objectMapper.readValue(anyString(), eq(GroupNameDto.class)))
-                .thenReturn(new GroupNameDto("소설책"));
-
-        when(aiApiClient.groupName(any(), any(), any()))
-                .thenReturn("{\"groupName\":\"소설책\"}");
-        when(aiApiClient.createEmbedding(any()))
-                .thenReturn(new EmbeddingResponse());
-
         doNothing().when(groupCache).put(any(), any());
         when(keywordGroupRepository.save(any())).thenReturn(KeywordGroup.builder().build());
         when(groupMappingCache.get(any(), (Class<Object>) any()))
@@ -102,23 +87,14 @@ class EventExecuteTest {
     }
 
     @Test
-    void 그룹생성이벤트실패_getCacheNull() throws JsonProcessingException {
+    void 그룹생성이벤트실패_getCacheNull() {
         groupCache = Mockito.mock(Cache.class);
         groupMappingCache = Mockito.mock(Cache.class);
         when(redisCacheManager.getCache("group-mapping")).thenReturn(null);
         when(redisCacheManager.getCache("group")).thenReturn(null);
 
-        CreateGroupEvent createGroupEvent = new CreateGroupEvent("소설책추천해줘", List.of(book), List.of(1L),
+        CreateGroupEvent createGroupEvent = new CreateGroupEvent(List.of(book), List.of(1L),
                 new Float[]{0.9F});
-        when(objectMapper.writeValueAsString(any()))
-                .thenReturn("mocked-json");
-        when(objectMapper.readValue(anyString(), eq(GroupNameDto.class)))
-                .thenReturn(new GroupNameDto("소설책"));
-
-        when(aiApiClient.groupName(any(), any(), any()))
-                .thenReturn("{\"groupName\":\"소설책\"}");
-        when(aiApiClient.createEmbedding(any()))
-                .thenReturn(new EmbeddingResponse());
         eventExecute.createGroupEvent(createGroupEvent);
 
         verify(expiringGroupManager, times(0)).offer(any(), any());
@@ -131,7 +107,7 @@ class EventExecuteTest {
         embeddingResponse.setEmbedding(new Float[]{0.9f});
         UpdateGroupEvent updateGroupEvent = new UpdateGroupEvent(embeddingResponse, book);
         UUID uuid = UUID.randomUUID();
-        KeywordGroupMapping keywordGroupMapping = new KeywordGroupMapping(uuid, new ArrayList<>(List.of(1L)), "test",
+        KeywordGroupMapping keywordGroupMapping = new KeywordGroupMapping(uuid, new ArrayList<>(List.of(1L)),
                 1);
         when(bookRepository.searchByKeywordGroupVector(any(), anyInt())).thenReturn(List.of(keywordGroup));
         when(groupMappingCache.get(any(), (Class<Object>) any()))
@@ -164,7 +140,7 @@ class EventExecuteTest {
     @Test
     void 북삭제이벤트() {
         UUID uuid = UUID.randomUUID();
-        KeywordGroupMapping keywordGroupMapping = new KeywordGroupMapping(uuid, new ArrayList<>(List.of(1L)), "test",
+        KeywordGroupMapping keywordGroupMapping = new KeywordGroupMapping(uuid, new ArrayList<>(List.of(1L)),
                 1);
         when(wrapper.get()).thenReturn(keywordGroupMapping);
         when(groupCache.get(any(UUID.class))).thenReturn(wrapper);
@@ -186,7 +162,7 @@ class EventExecuteTest {
         ExpiringGroup expiringGroup = new ExpiringGroup(uuid, Duration.ofMinutes(1));
 
         KeywordGroupMapping keywordGroupMapping = new KeywordGroupMapping(expiringGroup.getUuid(),
-                new ArrayList<>(List.of(1L)), "test",
+                new ArrayList<>(List.of(1L)),
                 1);
         when(keywordGroupRepository.findById(any())).thenReturn(Optional.of(keywordGroup));
         doNothing().when(keywordGroupRepository).delete(any());

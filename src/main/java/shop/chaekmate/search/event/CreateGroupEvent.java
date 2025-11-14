@@ -1,7 +1,8 @@
 package shop.chaekmate.search.event;
 
 import java.util.List;
+import shop.chaekmate.search.document.Book;
 
-public record CreateGroupEvent(String keyword,
-                               List<shop.chaekmate.search.document.Book> books, List<Long> ids,Float[] vector) {
+public record CreateGroupEvent(
+        List<Book> books, List<Long> ids, Float[] vector) {
 }

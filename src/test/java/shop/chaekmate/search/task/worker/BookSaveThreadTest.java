@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,15 +28,18 @@ class BookSaveThreadTest {
     BookIndexService bookIndexService;
     @Mock
     BookTaskQueue<TaskMapping<Book>> queue;
+    @Mock
+    BookWaitingTask bookWaitingTask;
     BookSaveThread saveThread;
     List<Book> bookList;
+
     @BeforeEach
     void setUp() {
-        List<BookTaskExecutor<?, ?>> executors  = List.of(new BookTaskSave(bookIndexService))    ;
+        List<BookTaskExecutor<?, ?>> executors = List.of(new BookTaskSave(bookIndexService));
 
-        saveThread = new BookSaveThread(queue, new TaskExecutorRegistry(executors));
+        saveThread = new BookSaveThread(queue, new TaskExecutorRegistry(executors), bookWaitingTask);
         ReflectionTestUtils.setField(saveThread, "batchSize", 3);
-        this.bookList= (List<Book>) ReflectionTestUtils.getField(saveThread,"buffer");
+        this.bookList = (List<Book>) ReflectionTestUtils.getField(saveThread, "buffer");
     }
 
     @Test

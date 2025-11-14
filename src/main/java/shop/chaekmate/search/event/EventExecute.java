@@ -2,7 +2,6 @@ package shop.chaekmate.search.event;
 
 import static java.util.UUID.randomUUID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -20,13 +19,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import shop.chaekmate.search.api.AiApiClient;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.document.ExpiringGroup;
 import shop.chaekmate.search.document.KeywordGroup;
 import shop.chaekmate.search.document.KeywordGroupMapping;
-import shop.chaekmate.search.dto.EmbeddingResponse;
-import shop.chaekmate.search.dto.GroupNameDto;
 import shop.chaekmate.search.repository.BookRepository;
 import shop.chaekmate.search.repository.KeywordGroupRepository;
 import shop.chaekmate.search.task.queue.ExpiringGroupManager;
@@ -36,7 +32,6 @@ import shop.chaekmate.search.task.queue.ExpiringGroupManager;
 @RequiredArgsConstructor
 public class EventExecute {
     private final KeywordGroupRepository keywordGroupRepository;
-    private final AiApiClient aiApiClient;
     private final RedisCacheManager redisCacheManager;
     private final ObjectMapper objectMapper;
     private final BookRepository bookRepository;
@@ -47,23 +42,16 @@ public class EventExecute {
 
     @EventListener(CreateGroupEvent.class)
     @Async
-    public void createGroupEvent(CreateGroupEvent createGroupEvent) throws JsonProcessingException {
-        List<Book> books = createGroupEvent.books();
+    public void createGroupEvent(CreateGroupEvent createGroupEvent) {
         List<Long> ids = createGroupEvent.ids();
-        String keywordJson = objectMapper.writeValueAsString(createGroupEvent.keyword());
-        String booksJson = objectMapper.writeValueAsString(books.stream().map(Book::toJson).toList());
-        String keywordVector = objectMapper.writeValueAsString(createGroupEvent.vector());
-        String groupJson = aiApiClient.groupName(keywordJson, booksJson, keywordVector)
-                .replaceAll("(?s)```json|```", "").trim();
-        GroupNameDto groupNameDto = objectMapper.readValue(groupJson, GroupNameDto.class);
-        EmbeddingResponse embeddingResponse = aiApiClient.createEmbedding(groupNameDto.getGroupName());
+        List<Book> books = createGroupEvent.books();
         UUID id = randomUUID();
-        KeywordGroup keywordGroup = KeywordGroup.builder().id(id).embedding(embeddingResponse.getEmbedding()).build();
+        KeywordGroup keywordGroup = KeywordGroup.builder().id(id).embedding(createGroupEvent.vector()).build();
 
         Cache groupCache = getCache(GROUP);
         Cache mappingCache = getCache(GROUP_MAPPING);
         if (groupCache != null && mappingCache != null) {
-            groupCache.put(id, new KeywordGroupMapping(id, ids, groupNameDto.getGroupName(), 0));
+            groupCache.put(id, new KeywordGroupMapping(id, ids, 0));
             keywordGroupRepository.save(keywordGroup);
 
             for (Book book : books) {
