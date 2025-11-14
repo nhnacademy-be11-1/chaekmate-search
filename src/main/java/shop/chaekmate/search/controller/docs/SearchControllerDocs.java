@@ -1,0 +1,26 @@
+package shop.chaekmate.search.controller.docs;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import shop.chaekmate.search.dto.SearchResponse;
+
+@Tag(name = "검색 API", description = "검색 API")
+public interface SearchControllerDocs {
+    @Operation(summary = "검색", description = "검색")
+    @ApiResponse(responseCode = "200", description = "검색 성공")
+    @GetMapping("/search")
+    ResponseEntity<Page<SearchResponse>> search(@RequestParam String prompt,
+                                                @PageableDefault(sort = "price", direction = Sort.Direction.ASC) Pageable pageable)
+            throws JsonProcessingException;
+
+
+}

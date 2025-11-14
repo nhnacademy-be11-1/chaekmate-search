@@ -1,0 +1,10 @@
+# Search Server Port
+server:
+  port: 9400
+
+# Eureka Server URL
+eureka:
+  client:
+    service-url:
+      defaultZone: http://chaekmate:1234@localhost:8761/eureka
+

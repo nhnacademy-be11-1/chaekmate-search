@@ -1,0 +1,57 @@
+{
+  "properties": {
+    "id": { "type": "long" },
+    "title": {
+      "type": "text",
+      "analyzer": "korean_english_analyzer",
+      "search_analyzer": "korean_english_analyzer",
+      "fields": {
+        "keyword": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+      }
+    },
+    "author": {
+      "type": "text",
+      "analyzer": "korean_english_analyzer",
+      "fields": {
+        "keyword": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+      }
+    },
+    "isbn": { "type": "keyword" },
+    "publisher": {
+      "type": "text",
+      "analyzer": "korean_english_analyzer",
+      "fields": {
+        "keyword": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+      }
+    },
+    "price": { "type": "integer" },
+    "description": { "type": "text", "analyzer": "korean_english_analyzer" },
+    "categories": {
+      "type": "text",
+      "analyzer": "korean_english_analyzer",
+      "fields": {
+        "keyword": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+      }
+    },
+    "tags": {
+      "type": "text",
+      "analyzer": "korean_english_analyzer",
+      "fields": {
+        "keyword": { "type": "keyword", "normalizer": "lowercase_normalizer" }
+      }
+    },
+    "bookImages": { "type": "keyword" },
+    "rating": { "type": "double" },
+    "reviewSummary": { "type": "text", "analyzer": "korean_english_analyzer" },
+    "reviewCnt": { "type": "integer" },
+    "embedding": {
+      "type": "dense_vector",
+      "dims": 1024,
+      "index": true,
+      "similarity": "cosine"
+    },
+    "publicationDatetime": { "type": "date" },
+    "createdAt": { "type": "date" },
+    "updatedAt": { "type": "date" }
+  }
+}
