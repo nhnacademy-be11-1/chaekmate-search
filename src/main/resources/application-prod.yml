@@ -16,7 +16,15 @@ spring:
     port: 5672
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
-
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GCP_PROJECT_ID}
+          location: asia-northeast1
+          chat:
+            options:
+              model: gemini-2.5-flash
   elasticsearch:
     uris: ${ES_URL}
     username: ${ES_USERNAME}
