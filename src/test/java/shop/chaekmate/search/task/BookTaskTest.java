@@ -58,7 +58,7 @@ class BookTaskTest {
         bookInfoRequestInsert.setId(1);
         bookInfoRequestInsert.setPrice(2);
         bookInfoRequestInsert.setDescription("test");
-        bookInfoRequestInsert.setBookImages(List.of());
+        bookInfoRequestInsert.setBookImages("test");
         bookInfoRequestInsert.setAuthor("test");
         bookInfoRequestInsert.setCategories(List.of());
         bookInfoRequestInsert.setTags(List.of());
@@ -69,14 +69,14 @@ class BookTaskTest {
         bookInfoRequestUpdate.setId(1);
         bookInfoRequestUpdate.setPrice(2);
         bookInfoRequestUpdate.setDescription("test");
-        bookInfoRequestUpdate.setBookImages(List.of());
+        bookInfoRequestUpdate.setBookImages("tset");
         bookInfoRequestUpdate.setAuthor("test");
         bookInfoRequestUpdate.setCategories(List.of());
         bookInfoRequestUpdate.setTags(List.of());
         bookInfoRequestUpdate.setPublicationDatetime(LocalDate.now());
         bookInfoRequestUpdate.setTitle("test");
-        Book book1 = Book.builder().id(1).bookImages(List.of()).author("test").categories(List.of()).description("test").embedding(new Float[]{0.1F,}).price(10000).publicationDatetime(LocalDate.now()).tags(List.of()).title("test").build();
-        Book book2 = Book.builder().id(1).bookImages(List.of()).author("updatetest").categories(List.of()).description("updatetest").embedding(new Float[]{0.1F,}).price(10000).publicationDatetime(LocalDate.now()).tags(List.of()).title("updatetest").build();
+        Book book1 = Book.builder().id(1).bookImages("tset").author("test").categories(List.of()).description("test").embedding(new Float[]{0.1F,}).price(10000).publicationDatetime(LocalDate.now()).tags(List.of()).title("test").build();
+        Book book2 = Book.builder().id(1).bookImages("tset").author("updatetest").categories(List.of()).description("updatetest").embedding(new Float[]{0.1F,}).price(10000).publicationDatetime(LocalDate.now()).tags(List.of()).title("updatetest").build();
 
         bookDeleteRequestDelete.setId(1);
         this.insertEvent = new TaskMapping<>(EventType.INSERT,bookInfoRequestInsert);

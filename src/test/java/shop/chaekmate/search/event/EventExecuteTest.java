@@ -9,7 +9,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -61,7 +60,7 @@ class EventExecuteTest {
     void init() {
         book = Book.builder().id(1).author("test").categories(List.of("test1", "test2")).description("test")
                 .embedding(new Float[]{0.9f, 0.2f}).price(10000).publicationDatetime(
-                        LocalDate.now()).tags(List.of("test", "test2")).title("test").bookImages(List.of("tset"))
+                        LocalDate.now()).tags(List.of("test", "test2")).title("test").bookImages("tset")
                 .build();
         keywordGroup = KeywordGroup.builder().id(UUID.randomUUID()).embedding(new Float[]{0.9f}).build();
         groupCache = Mockito.mock(Cache.class);

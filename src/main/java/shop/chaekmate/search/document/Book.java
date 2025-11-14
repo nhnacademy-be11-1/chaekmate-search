@@ -43,7 +43,7 @@ public class Book {
     private String publisher;
 
     @Field(type = FieldType.Text)
-    private List<String> bookImages;
+    private String bookImages;
 
     @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "korean_english_analyzer"),
             otherFields = @InnerField(suffix = "keyword", type = FieldType.Keyword))
@@ -76,7 +76,7 @@ public class Book {
 
     @Builder
     public Book(long id, String title, String author, Integer price, String description,
-                String isbn, String publisher, List<String> bookImages,
+                String isbn, String publisher, String bookImages,
                 List<String> categories, LocalDate publicationDatetime,
                 List<String> tags, String reviewSummary, Double rating, Float[] embedding, Integer reviewCnt) {
         this.id = id;
@@ -86,11 +86,11 @@ public class Book {
         this.description = description;
         this.isbn = isbn;
         this.publisher = publisher;
-        this.bookImages = bookImages != null ? bookImages : new ArrayList<>();
+        this.bookImages = bookImages;
         this.categories = categories != null ? categories : new ArrayList<>();
         this.publicationDatetime = publicationDatetime;
         this.tags = tags != null ? tags : new ArrayList<>();
-        this.reviewSummary = reviewSummary == null || reviewSummary.isEmpty() ? "":reviewSummary;
+        this.reviewSummary = reviewSummary == null || reviewSummary.isEmpty() ? "" : reviewSummary;
         this.rating = rating != null ? rating : 0.0;
         this.embedding = embedding;
         this.createdAt = LocalDateTime.now();
@@ -102,15 +102,19 @@ public class Book {
         this.title = bookInfoRequest.getTitle() != null ? bookInfoRequest.getTitle() : this.title;
         this.author = bookInfoRequest.getAuthor() != null ? bookInfoRequest.getAuthor() : this.author;
         this.price = bookInfoRequest.getPrice() != null ? bookInfoRequest.getPrice() : this.price;
-        this.description = bookInfoRequest.getDescription() != null ? bookInfoRequest.getDescription() : this.description;
+        this.description =
+                bookInfoRequest.getDescription() != null ? bookInfoRequest.getDescription() : this.description;
         this.isbn = bookInfoRequest.getIsbn() != null ? bookInfoRequest.getIsbn() : this.isbn;
         this.publisher = bookInfoRequest.getPublisher() != null ? bookInfoRequest.getPublisher() : this.publisher;
         this.bookImages = bookInfoRequest.getBookImages() != null ? bookInfoRequest.getBookImages() : this.bookImages;
         this.categories = bookInfoRequest.getCategories() != null ? bookInfoRequest.getCategories() : this.categories;
-        this.publicationDatetime = bookInfoRequest.getPublicationDatetime() != null ? bookInfoRequest.getPublicationDatetime() : this.publicationDatetime;
+        this.publicationDatetime =
+                bookInfoRequest.getPublicationDatetime() != null ? bookInfoRequest.getPublicationDatetime()
+                        : this.publicationDatetime;
         this.tags = bookInfoRequest.getTags() != null ? bookInfoRequest.getTags() : this.tags;
-        this.reviewSummary = bookInfoRequest.getReviewSummary() != null ? bookInfoRequest.getReviewSummary() : this.reviewSummary;
-        this.reviewCnt = bookInfoRequest.getReviewCnt() == 0 ? this.reviewCnt : bookInfoRequest.getReviewCnt();
+        this.reviewSummary =
+                bookInfoRequest.getReviewSummary() != null ? bookInfoRequest.getReviewSummary() : this.reviewSummary;
+        this.reviewCnt = bookInfoRequest.getReviewCnt() != null ? bookInfoRequest.getReviewCnt() : this.reviewCnt;
         this.rating = (bookInfoRequest.getRating() != null && bookInfoRequest.getRating() > 0.0)
                 ? bookInfoRequest.getRating()
                 : this.rating;

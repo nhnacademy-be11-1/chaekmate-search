@@ -15,7 +15,7 @@ public class SearchResponse {
     String author;
     Integer price;
     String description;
-    List<String> bookImages;
+    String bookImages;
     List<String> categories;
     LocalDate publicationDatetime;
     List<String> tags;

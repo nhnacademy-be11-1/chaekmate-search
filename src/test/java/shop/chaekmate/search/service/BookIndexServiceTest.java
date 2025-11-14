@@ -40,7 +40,7 @@ class BookIndexServiceTest {
         BookInfoRequest bookInfoRequest = new BookInfoRequest();
         bookInfoRequest.setId(1);
         bookInfoRequest.setAuthor("test");
-        bookInfoRequest.setBookImages(List.of());
+        bookInfoRequest.setBookImages("test");
         bookInfoRequest.setCategories(List.of());
         bookInfoRequest.setTags(List.of());
         bookInfoRequest.setDescription("test");
@@ -71,12 +71,11 @@ class BookIndexServiceTest {
         BookInfoRequest bookInfoRequest = new BookInfoRequest();
         bookInfoRequest.setId(1);
         bookInfoRequest.setAuthor("test");
-        bookInfoRequest.setBookImages(List.of());
+        bookInfoRequest.setBookImages("test");
         bookInfoRequest.setCategories(List.of());
         bookInfoRequest.setTags(List.of());
         bookInfoRequest.setDescription("test");
         bookInfoRequest.setPrice(1000);
-        bookInfoRequest.setReviewCnt(0);
         when(bookRepository.findById(any())).thenReturn(Optional.of(book));
         EmbeddingResponse embeddingResponse = new EmbeddingResponse();
         embeddingResponse.setEmbedding(new Float[]{0.1F, 0.2F});
