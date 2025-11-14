@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      SPRING_PROFILES_ACTIVE: test
+      SPRING_PROFILES_ACTIVE: dev
       DOMAIN: ${{ secrets.DOMAIN_NAME }}
       PORT_NUMBER: ${{ secrets.PORT_NUMBER }}
       ES_URL: ${{ secrets.ES_URL }}
