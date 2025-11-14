@@ -1,13 +1,21 @@
 spring:
   rabbitmq:
-    host: ${RABBITMQ_HOST}
+    host: test
     port: 5672
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
+    username: test
+    password: test
+
   elasticsearch:
-    uris: ${ES_URL}
-    username: ${ES_USERNAME}
-    password: ${ES_PASSWORD}
+    uris: test
+    username: test
+    password: test
+  data:
+    redis:
+      host: test
+      password: test
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_RANGE:303}
+
   ai:
     vertex:
       ai:
@@ -17,12 +25,15 @@ spring:
           chat:
             options:
               model: gemini-2.5-flash
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      password: ${REDIS_PASSWORD}
-      port: ${REDIS_PORT:6379}
-      database: ${REDIS_RANGE:303}
+ollama:
+  api:
+    url: localhost
+
+rerank:
+  api:
+    url: localhost
+
+
 rabbitmq:
   exchange:
     name: cm-book-exchange

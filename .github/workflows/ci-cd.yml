@@ -42,6 +42,17 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Create GCP Credentials File
+        run: |
+          echo "${{ secrets.GCP_CREDENTIALS_BASE64 }}" | base64 --decode > gcp.json
+        shell: bash
+
+      # Step. Export GOOGLE_APPLICATION_CREDENTIALS
+      - name: Export GOOGLE_APPLICATION_CREDENTIALS
+        run: |
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$PWD/gcp.json" >> $GITHUB_ENV
+        shell: bash
+
       # Step.3 SonarQube Caching
       - name: Cache SonarQube packages
         uses: actions/cache@v4
@@ -114,4 +125,5 @@ jobs:
             export REDIS_PORT="${{ secrets.REDIS_PORT }}"
             export REDIS_RANGE="${{ secrets.REDIS_RANGE }}"
             export EUREKA_URL_PROD="${{ secrets.EUREKA_URL_PROD }}"
+            export RERANK_API_URL="${{ secrets.RERANK_API_URL }}"
             bash -lc ./startup.sh
