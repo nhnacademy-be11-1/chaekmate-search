@@ -1,21 +1,24 @@
+# Search Server Port
+server:
+  port: 9400
+
 spring:
   rabbitmq:
-    host: test
+    host: ${RABBITMQ_HOST}
     port: 5672
-    username: test
-    password: test
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
 
   elasticsearch:
-    uris: test
-    username: test
-    password: test
+    uris: ${ES_URL}
+    username: ${ES_USERNAME}
+    password: ${ES_PASSWORD}
   data:
     redis:
-      host: test
-      password: test
+      host: ${REDIS_HOST}
+      password: ${REDIS_PASSWORD}
       port: ${REDIS_PORT:6379}
       database: ${REDIS_RANGE:303}
-
   ai:
     vertex:
       ai:
@@ -25,22 +28,14 @@ spring:
           chat:
             options:
               model: gemini-2.5-flash
-ollama:
-  api:
-    url: localhost
-
-rerank:
-  api:
-    url: localhost
 
 
 rabbitmq:
   exchange:
     name: cm-book-exchange
   queues:
-    queue-names:  cm-test-book-1, cm-test-book-2, cm-test-book-3
-    routing-keys:  cm-test-book-key-1, cm-test-book-key-2, cm-test-book-key-3
-
+    queue-names:  cm-book-1, cm-book-2, cm-book-3
+    routing-keys:  cm-book-key-1, cm-book-key-2, cm-book-key-3
 
 ollama:
   api:
