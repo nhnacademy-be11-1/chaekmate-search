@@ -2,6 +2,7 @@ package shop.chaekmate.search.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.chaekmate.search.api.AiApiClient;
@@ -23,6 +24,9 @@ public class BookIndexService {
     private final BookRepository bookRepository;
     private final ApplicationEventPublisher publisher;
 
+    private final RetryTemplate retryTemplate;
+
+    @Transactional
     public Book insert(BookInfoRequest bookInfoRequest) {
         Valid.existBook(bookRepository.findById(bookInfoRequest.getId()));
         String text = EmbeddingTextBuilder.toText(bookInfoRequest);
@@ -48,8 +52,15 @@ public class BookIndexService {
     }
 
 
+    @Transactional
     public Book update(BookInfoRequest bookInfoRequest) {
-        Book bookIndex = Valid.isBook(bookRepository.findById(bookInfoRequest.getId()));
+
+        // RetryTemplate 사용 (책 생성 시 인덱싱 전에 썸네일 등록 요청)
+        Book bookIndex = retryTemplate.execute(context ->
+             bookRepository.findById(bookInfoRequest.getId())
+                    .orElseThrow(() -> new IllegalArgumentException("Book not found: " + bookInfoRequest.getId()))
+        );
+
         String text = EmbeddingTextBuilder.toText(bookInfoRequest);
         EmbeddingResponse embeddingResponse = aiApiClient.createEmbedding(text);
         bookIndex.update(bookInfoRequest, embeddingResponse.getEmbedding());

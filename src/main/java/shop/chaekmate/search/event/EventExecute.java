@@ -19,6 +19,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.document.ExpiringGroup;
 import shop.chaekmate.search.document.KeywordGroup;
@@ -64,8 +66,8 @@ public class EventExecute {
         }
     }
 
-    @EventListener(UpdateGroupEvent.class)
-    @Async
+    // 생성 이후에 요청
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void updateGroupEvent(UpdateGroupEvent updateGroupEvent) {
         List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(
                 updateGroupEvent.embeddingResponse(), 100);
