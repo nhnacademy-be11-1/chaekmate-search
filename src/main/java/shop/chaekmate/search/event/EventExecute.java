@@ -1,16 +1,6 @@
 package shop.chaekmate.search.event;
 
-import static java.util.UUID.randomUUID;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -26,6 +16,11 @@ import shop.chaekmate.search.document.KeywordGroupMapping;
 import shop.chaekmate.search.repository.BookRepository;
 import shop.chaekmate.search.repository.KeywordGroupRepository;
 import shop.chaekmate.search.task.queue.ExpiringGroupManager;
+
+import java.time.Duration;
+import java.util.*;
+
+import static java.util.UUID.randomUUID;
 
 @Slf4j
 @Component
@@ -67,9 +62,10 @@ public class EventExecute {
     @EventListener(UpdateGroupEvent.class)
     @Async
     public void updateGroupEvent(UpdateGroupEvent updateGroupEvent) {
-        List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(
-                updateGroupEvent.embeddingResponse(), 100);
         Book book = updateGroupEvent.book();
+        List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(
+                book.getEmbedding(), 100);
+
         Cache groupCache = getCache(GROUP);
         Cache mappingCache = getCache(GROUP_MAPPING);
         if (groupCache == null || mappingCache == null) {
@@ -77,29 +73,25 @@ public class EventExecute {
         }
         Set<UUID> oldGroupIds = new HashSet<>(Optional.ofNullable(mappingCache.get(book.getId(), List.class))
                 .orElse(Collections.emptyList()));
-        if (!oldGroupIds.isEmpty()) {
-            for (UUID groupId : oldGroupIds) {
-                KeywordGroupMapping mapping = toKeywordGroupMapping(groupCache, groupId);
-                if (mapping != null) {
-                    mapping.getIds().removeIf(id -> id.equals(book.getId()));
-                    groupCache.put(groupId, mapping);
-                }
-
-                mappingCache.evict(book.getId());
+        for (UUID groupId : oldGroupIds) {
+            KeywordGroupMapping mapping = toKeywordGroupMapping(groupCache, groupId);
+            if (mapping != null) {
+                mapping.getIds().removeIf(id -> id.equals(book.getId()));
+                groupCache.put(groupId, mapping);
             }
-
-            Set<UUID> newGroupIds = new HashSet<>();
-            for (KeywordGroup group : keywordGroups) {
-                newGroupIds.add(group.getId());
-                KeywordGroupMapping mapping = toKeywordGroupMapping(groupCache, group.getId());
-                if (mapping != null) {
-                    mapping.getIds().add(book.getId());
-                    groupCache.put(group.getId(), mapping);
-                }
+        }
+        mappingCache.evict(book.getId());
+        Set<UUID> newGroupIds = new HashSet<>();
+        for (KeywordGroup group : keywordGroups) {
+            newGroupIds.add(group.getId());
+            KeywordGroupMapping mapping = toKeywordGroupMapping(groupCache, group.getId());
+            if (mapping != null) {
+                mapping.getIds().add(book.getId());
+                groupCache.put(group.getId(), mapping);
             }
-            if (!newGroupIds.isEmpty()) {
-                mappingCache.put(book.getId(), new ArrayList<>(newGroupIds));
-            }
+        }
+        if (!newGroupIds.isEmpty()) {
+            mappingCache.put(book.getId(), new ArrayList<>(newGroupIds));
         }
     }
 

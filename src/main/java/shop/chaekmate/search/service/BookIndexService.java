@@ -12,8 +12,8 @@ import shop.chaekmate.search.dto.BookDeleteRequest;
 import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.dto.EmbeddingResponse;
 import shop.chaekmate.search.event.DeleteGroupEvent;
-import shop.chaekmate.search.event.UpdateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
+
 import java.util.List;
 
 @Service
@@ -53,14 +53,13 @@ public class BookIndexService {
         String text = EmbeddingTextBuilder.toText(bookInfoRequest);
         EmbeddingResponse embeddingResponse = aiApiClient.createEmbedding(text);
         bookIndex.update(bookInfoRequest, embeddingResponse.getEmbedding());
-        publisher.publishEvent(new UpdateGroupEvent(embeddingResponse, bookIndex));
         return bookIndex;
     }
 
 
     public void delete(BookDeleteRequest bookDeleteRequest) {
         Book bookIndex = Valid.isBook(bookRepository.findById(bookDeleteRequest.getId()));
-        bookRepository.delete(bookIndex);
+        bookRepository.delete(bookIndex.getId());
         publisher.publishEvent(new DeleteGroupEvent(bookIndex.getId()));
     }
 

@@ -9,7 +9,6 @@ import org.springframework.data.elasticsearch.annotations.*;
 import shop.chaekmate.search.dto.BookInfoRequest;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,13 +66,6 @@ public class Book {
 
     @Field(type = FieldType.Dense_Vector, dims = 1024)
     private Float[] embedding;
-
-    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
-    private LocalDateTime createdAt;
-
-    @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
-    private LocalDateTime updatedAt;
-
     @Builder
     public Book(long id, String title, String author, Integer price, String description,
                 String isbn, String publisher, String bookImages,
@@ -93,8 +85,6 @@ public class Book {
         this.reviewSummary = reviewSummary == null || reviewSummary.isEmpty() ? "" : reviewSummary;
         this.rating = rating != null ? rating : 0.0;
         this.embedding = embedding;
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.reviewCnt = reviewCnt == null ? 0 : reviewCnt;
     }
 
@@ -119,7 +109,6 @@ public class Book {
                 ? bookInfoRequest.getRating()
                 : this.rating;
         this.embedding = (embedding != null && embedding.length > 0) ? embedding : this.embedding;
-        this.updatedAt = LocalDateTime.now();
     }
 
     public Map<String, Object> toJson() {

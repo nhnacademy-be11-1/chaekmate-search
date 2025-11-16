@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -14,6 +15,7 @@ import shop.chaekmate.search.dto.BaseBookTaskDto;
 import shop.chaekmate.search.dto.BookDeleteRequest;
 import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.dto.TaskMapping;
+import shop.chaekmate.search.event.UpdateGroupEvent;
 import shop.chaekmate.search.service.BookIndexService;
 import shop.chaekmate.search.task.queue.BookTaskQueue;
 import shop.chaekmate.search.task.worker.BookWaitingTask;
@@ -49,7 +51,8 @@ class BookTaskTest {
     private TaskMapping<?> insertEvent;
     private TaskMapping<?> deleteEvent;
     TaskMapping<?> updateEvent;
-
+    @MockitoBean
+    ApplicationEventPublisher publisher;
     @BeforeEach()
     void init() {
         BookInfoRequest bookInfoRequestInsert = new BookInfoRequest();
@@ -86,8 +89,9 @@ class BookTaskTest {
         when(bookIndexService.insert(any())).thenReturn(book1);
         when(bookIndexService.update(any())).thenReturn(book2);
         doNothing().when(bookIndexService).delete(any());
+        doNothing().when(bookIndexService).delete(any());
         doNothing().when(bookIndexService).saveAll(any());
-
+        doNothing().when(publisher).publishEvent(any(UpdateGroupEvent.class));
         eventQueue.clear();
         embeddingQueue.clear();
         saveQueue.clear();

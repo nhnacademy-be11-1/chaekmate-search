@@ -1,9 +1,11 @@
 package shop.chaekmate.search.task.worker;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import shop.chaekmate.search.common.EventType;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.dto.TaskMapping;
+import shop.chaekmate.search.event.UpdateGroupEvent;
 import shop.chaekmate.search.task.executor.BookTaskExecutor;
 import shop.chaekmate.search.task.executor.TaskExecutorRegistry;
 import shop.chaekmate.search.task.queue.BookTaskQueue;
@@ -18,11 +20,13 @@ public class BookSaveThread implements Runnable {
     private final BookTaskExecutor<List<Book>, Void> task;
     private final List<Book> buffer = new ArrayList<>();
     private final BookWaitingTask bookWaitingTask;
+    private final ApplicationEventPublisher publisher;
 
-    public BookSaveThread(BookTaskQueue<TaskMapping<Book>> bookTaskQueue, TaskExecutorRegistry taskExecutorRegistry, BookWaitingTask bookWaitingTask) {
+    public BookSaveThread(BookTaskQueue<TaskMapping<Book>> bookTaskQueue, TaskExecutorRegistry taskExecutorRegistry, BookWaitingTask bookWaitingTask, ApplicationEventPublisher publisher) {
         this.bookTaskQueue = bookTaskQueue;
         this.task = taskExecutorRegistry.get(EventType.SAVE);
         this.bookWaitingTask = bookWaitingTask;
+        this.publisher = publisher;
     }
 
     @Override
@@ -56,6 +60,7 @@ public class BookSaveThread implements Runnable {
             task.execute(buffer);
             for (Book book : buffer) {
                 bookWaitingTask.poll(book.getId());
+                publisher.publishEvent(new UpdateGroupEvent(book));
             }
             buffer.clear();
         } catch (Exception e) {
