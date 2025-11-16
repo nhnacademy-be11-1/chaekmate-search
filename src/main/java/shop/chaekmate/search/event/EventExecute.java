@@ -67,6 +67,7 @@ public class EventExecute {
     }
 
     // 생성 이후에 요청
+    @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void updateGroupEvent(UpdateGroupEvent updateGroupEvent) {
         List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(
