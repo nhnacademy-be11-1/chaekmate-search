@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import java.util.concurrent.ExecutorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import shop.chaekmate.search.dto.BookDeleteRequest;
 import shop.chaekmate.search.dto.TaskMapping;

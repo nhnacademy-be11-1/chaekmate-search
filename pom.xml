@@ -105,6 +105,13 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-cache</artifactId>
         </dependency>
+
+
+        <dependency>
+            <groupId>shop.chaekmate</groupId>
+            <artifactId>chaekmate-logstorage</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
