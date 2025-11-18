@@ -50,8 +50,6 @@
       "index": true,
       "similarity": "cosine"
     },
-    "publicationDatetime": { "type": "date" },
-    "createdAt": { "type": "date" },
-    "updatedAt": { "type": "date" }
+    "publicationDatetime": { "type": "date" }
   }
 }

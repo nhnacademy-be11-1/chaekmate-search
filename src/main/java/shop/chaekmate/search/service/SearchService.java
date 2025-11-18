@@ -1,13 +1,8 @@
 package shop.chaekmate.search.service;
 
-import static org.springframework.cache.Cache.ValueWrapper;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.Cache;
 import org.springframework.context.ApplicationEventPublisher;
@@ -25,6 +20,12 @@ import shop.chaekmate.search.dto.SearchResponse;
 import shop.chaekmate.search.event.CreateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static org.springframework.cache.Cache.ValueWrapper;
+
 @Service
 @RequiredArgsConstructor
 public class SearchService {
@@ -36,7 +37,7 @@ public class SearchService {
 
     public Page<SearchResponse> search(String keyword, Pageable pageable) throws JsonProcessingException {
         EmbeddingResponse embeddingResponse = aiApiClient.createEmbedding(keyword);
-        List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(embeddingResponse, 20);
+        List<KeywordGroup> keywordGroups = bookRepository.searchByKeywordGroupVector(embeddingResponse.getEmbedding(), 20);
         if (!keywordGroups.isEmpty()) {
             Cache cache = redisCacheManager.getCache("group");
             if (cache != null) {

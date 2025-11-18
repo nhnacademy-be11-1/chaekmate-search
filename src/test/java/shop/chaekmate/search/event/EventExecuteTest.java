@@ -103,9 +103,7 @@ class EventExecuteTest {
 
     @Test
     void 그룹업데이트이벤트() {
-        EmbeddingResponse embeddingResponse = new EmbeddingResponse();
-        embeddingResponse.setEmbedding(new Float[]{0.9f});
-        UpdateGroupEvent updateGroupEvent = new UpdateGroupEvent(embeddingResponse, book);
+        UpdateGroupEvent updateGroupEvent = new UpdateGroupEvent(book);
         UUID uuid = UUID.randomUUID();
         KeywordGroupMapping keywordGroupMapping = new KeywordGroupMapping(uuid, new ArrayList<>(List.of(1L)),
                 1);
@@ -125,9 +123,7 @@ class EventExecuteTest {
 
     @Test
     void 그룹업데이터이벤트실패_getCacheNull() {
-        EmbeddingResponse embeddingResponse = new EmbeddingResponse();
-        embeddingResponse.setEmbedding(new Float[]{0.9f});
-        UpdateGroupEvent updateGroupEvent = new UpdateGroupEvent(embeddingResponse, book);
+        UpdateGroupEvent updateGroupEvent = new UpdateGroupEvent(book);
         when(bookRepository.searchByKeywordGroupVector(any(), anyInt())).thenReturn(List.of(keywordGroup));
         groupCache = Mockito.mock(Cache.class);
         groupMappingCache = Mockito.mock(Cache.class);
