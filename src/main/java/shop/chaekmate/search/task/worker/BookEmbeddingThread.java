@@ -1,7 +1,6 @@
 package shop.chaekmate.search.task.worker;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.dto.TaskMapping;
@@ -28,19 +27,16 @@ public class BookEmbeddingThread implements Runnable {
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()) {
+            TaskMapping<BookInfoRequest> task = bookTaskQueue.take();
             try {
-                TaskMapping<BookInfoRequest> task = bookTaskQueue.take();
                 BookTaskExecutor<TaskMapping<BookInfoRequest>, TaskMapping<Book>> bookTaskExecutor = taskExecutorRegistry.get(
                         task.getEventType());
-                try {
-                    TaskMapping<Book> nextTask = bookTaskExecutor.execute(task);
-                    BookTaskQueue<TaskMapping<Book>> nextQueue =
-                            bookTaskQueueRegistry.getQueue(nextTask.getEventType());
-                    nextQueue.offer(nextTask);
-                } finally {
-                    bookWaitingTask.poll(task.getTaskData().getId());
-                }
+                TaskMapping<Book> nextTask = bookTaskExecutor.execute(task);
+                BookTaskQueue<TaskMapping<Book>> nextQueue =
+                        bookTaskQueueRegistry.getQueue(nextTask.getEventType());
+                nextQueue.offer(nextTask);
             }catch (Exception e){
+                bookWaitingTask.poll(task.getTaskData().getId());
                 log.error("Book embedding thread error", e);
             }
         }

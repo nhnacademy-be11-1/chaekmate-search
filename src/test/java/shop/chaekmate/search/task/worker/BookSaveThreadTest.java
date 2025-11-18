@@ -1,17 +1,12 @@
 package shop.chaekmate.search.task.worker;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.util.ReflectionTestUtils;
 import shop.chaekmate.search.document.Book;
 import shop.chaekmate.search.dto.TaskMapping;
@@ -20,6 +15,12 @@ import shop.chaekmate.search.task.executor.BookTaskExecutor;
 import shop.chaekmate.search.task.executor.BookTaskSave;
 import shop.chaekmate.search.task.executor.TaskExecutorRegistry;
 import shop.chaekmate.search.task.queue.BookTaskQueue;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(MockitoExtension.class)
 class BookSaveThreadTest {
@@ -32,12 +33,13 @@ class BookSaveThreadTest {
     BookWaitingTask bookWaitingTask;
     BookSaveThread saveThread;
     List<Book> bookList;
-
+    @Mock
+    ApplicationEventPublisher publisher;
     @BeforeEach
     void setUp() {
         List<BookTaskExecutor<?, ?>> executors = List.of(new BookTaskSave(bookIndexService));
 
-        saveThread = new BookSaveThread(queue, new TaskExecutorRegistry(executors), bookWaitingTask);
+        saveThread = new BookSaveThread(queue, new TaskExecutorRegistry(executors), bookWaitingTask,publisher);
         ReflectionTestUtils.setField(saveThread, "batchSize", 3);
         this.bookList = (List<Book>) ReflectionTestUtils.getField(saveThread, "buffer");
     }

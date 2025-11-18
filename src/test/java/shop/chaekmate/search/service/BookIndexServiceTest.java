@@ -14,7 +14,6 @@ import shop.chaekmate.search.dto.BookDeleteRequest;
 import shop.chaekmate.search.dto.BookInfoRequest;
 import shop.chaekmate.search.dto.EmbeddingResponse;
 import shop.chaekmate.search.event.DeleteGroupEvent;
-import shop.chaekmate.search.event.UpdateGroupEvent;
 import shop.chaekmate.search.repository.BookRepository;
 
 import java.time.LocalDate;
@@ -35,6 +34,7 @@ class BookIndexServiceTest {
     ApplicationEventPublisher publisher;
     @InjectMocks
     BookIndexService bookIndexService;
+
     @Test
     void 삽입() {
         BookInfoRequest bookInfoRequest = new BookInfoRequest();
@@ -83,7 +83,6 @@ class BookIndexServiceTest {
 
         Book result = bookIndexService.update(bookInfoRequest);
         Assertions.assertEquals("zzzzz", result.getTitle());
-        verify(publisher, times(1)).publishEvent(any(UpdateGroupEvent.class));
     }
 
     @Test
@@ -100,9 +99,9 @@ class BookIndexServiceTest {
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build();
         when(bookRepository.findById(any())).thenReturn(Optional.of(book));
-        doNothing().when(bookRepository).delete(any());
+        doNothing().when(bookRepository).delete(anyLong());
         bookIndexService.delete(new BookDeleteRequest());
-        verify(bookRepository, times(1)).delete(any());
+        verify(bookRepository, times(1)).delete(anyLong());
         verify(publisher, times(1)).publishEvent(any(DeleteGroupEvent.class));
     }
 
@@ -119,8 +118,8 @@ class BookIndexServiceTest {
                 .publicationDatetime(LocalDate.now())
                 .embedding(new Float[]{0.1f, 0.2f, 0.3f})
                 .build());
-        when(bookRepository.saveAll(any())).thenReturn(mockList);
-        bookIndexService.saveAll(List.of());
+        doNothing().when(bookRepository).saveAll(anyList());
+        bookIndexService.saveAll(mockList);
         verify(bookRepository, times(1)).saveAll(any());
     }
 }
