@@ -126,4 +126,4 @@ jobs:
             export REDIS_RANGE="${{ secrets.REDIS_RANGE }}"
             export EUREKA_URL_PROD="${{ secrets.EUREKA_URL_PROD }}"
             export RERANK_API_URL="${{ secrets.RERANK_API_URL }}"
-            bash -lc ./startup.sh
+            bash -lc ./startup-single.sh
