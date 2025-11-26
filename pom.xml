@@ -40,6 +40,13 @@
             <id>spring-milestones</id>
             <url>https://repo.spring.io/milestone</url>
         </repository>
+        <repository>
+            <id>chaekmate-logstorage-repo</id>
+            <url>https://raw.githubusercontent.com/nhnacademy-be11-1/chaekmate-logstorage/main/maven-repo</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -59,7 +66,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -108,9 +118,9 @@
 
 
         <dependency>
-            <groupId>shop.chaekmate</groupId>
+            <groupId>com.chaekmate</groupId>
             <artifactId>chaekmate-logstorage</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
 
