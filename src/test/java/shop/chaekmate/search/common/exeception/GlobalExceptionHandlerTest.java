@@ -18,8 +18,6 @@ class GlobalExceptionHandlerTest {
         Exception e = new Exception("test");
 
         ResponseEntity<ErrorResponse> response = handler.handleUnexpected(e);
-
-        // then
         assertThat(response.getStatusCode().value())
                 .isEqualTo(ErrorCode.INTERNAL_SERVER_ERROR.getStatus().value());
 
