@@ -1,12 +1,15 @@
+# Search/Eureka Server Port (prod) : "배포설명" 확인
+
 # Search Server Port
+
 server:
-  port: 9400
+  port: ${PORT_NUMBER}
 
 # Eureka Server URL
 eureka:
   client:
     service-url:
-      defaultZone: http://chaekmate:1234@localhost:8761/eureka
+      defaultZone: ${EUREKA_URL_PROD}
 
 spring:
   application:
@@ -17,7 +20,15 @@ spring:
     port: 5672
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
-
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: ${GCP_PROJECT_ID}
+          location: asia-northeast1
+          chat:
+            options:
+              model: gemini-2.5-flash
   elasticsearch:
     uris: ${ES_URL}
     username: ${ES_USERNAME}
@@ -28,23 +39,12 @@ spring:
       password: ${REDIS_PASSWORD}
       port: ${REDIS_PORT:6379}
       database: ${REDIS_RANGE:303}
-  ai:
-    vertex:
-      ai:
-        gemini:
-          project-id: ${GCP_PROJECT_ID}
-          location: asia-northeast1
-          chat:
-            options:
-              model: gemini-2.5-flash
-
-
 rabbitmq:
   exchange:
     name: cm-book-exchange
   queues:
-    queue-names:  cm-book-1-dev
-    routing-keys:  cm-book-key-1-dev
+    queue-names:  cm-book-1
+    routing-keys:  cm-book-key-1
 
 ollama:
   api:
@@ -53,3 +53,9 @@ ollama:
 rerank:
   api:
     url: ${RERANK_API_URL}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info

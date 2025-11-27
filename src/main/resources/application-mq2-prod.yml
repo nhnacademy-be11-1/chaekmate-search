@@ -11,6 +11,9 @@ eureka:
       defaultZone: ${EUREKA_URL_PROD}
 
 spring:
+  application:
+    name: chaekmate-search
+
   rabbitmq:
     host: ${RABBITMQ_HOST}
     port: 5672
@@ -39,12 +42,8 @@ rabbitmq:
   exchange:
     name: cm-book-exchange
   queues:
-    - name: cm-book-1
-      routing-key: cm-book-key-1
-    - name: cm-book-2
-      routing-key: cm-book-key-2
-    - name: cm-book-3
-      routing-key: cm-book-key-3
+    queue-names:  cm-book-2
+    routing-keys:  cm-book-key-2
 
 ollama:
   api:
@@ -54,6 +53,8 @@ rerank:
   api:
     url: ${RERANK_API_URL}
 
-logging:
-  level:
-    root: info
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info

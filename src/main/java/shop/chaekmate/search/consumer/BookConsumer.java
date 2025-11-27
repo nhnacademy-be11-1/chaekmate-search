@@ -18,7 +18,7 @@ public class BookConsumer {
         this.bookWaitingTask = bookWaitingTask;
         this.bookEventQueue = bookEventQueue;
     }
-    @RabbitListener(queues = "cm-book-1")
+    @RabbitListener(queues = "${rabbitmq.queues.queue-names}")
     public void consume(TaskMapping<BaseBookTaskDto> taskMapping) {
         bookWaitingTask.put(taskMapping);
         bookEventQueue.offer(taskMapping);
