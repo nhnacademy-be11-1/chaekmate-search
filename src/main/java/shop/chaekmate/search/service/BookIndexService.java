@@ -1,6 +1,7 @@
 package shop.chaekmate.search.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import shop.chaekmate.search.repository.BookRepository;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookIndexService {
@@ -27,7 +29,6 @@ public class BookIndexService {
         Valid.existBook(bookRepository.findById(bookInfoRequest.getId()));
         String text = EmbeddingTextBuilder.toText(bookInfoRequest);
         Float[] embedding = aiApiClient.createEmbedding(text).getEmbedding();
-
         return Book.builder()
                 .id(bookInfoRequest.getId())
                 .title(bookInfoRequest.getTitle())

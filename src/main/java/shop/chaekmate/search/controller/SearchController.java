@@ -27,4 +27,5 @@ public class SearchController implements SearchControllerDocs {
             throws JsonProcessingException {
         return ResponseEntity.ok(searchService.search(prompt, pageable));
     }
+
 }

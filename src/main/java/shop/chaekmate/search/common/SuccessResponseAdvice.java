@@ -11,8 +11,10 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+
 @RestControllerAdvice(basePackages = "shop.chaekmate.search")
 @RequiredArgsConstructor
+
 public class SuccessResponseAdvice implements ResponseBodyAdvice<Object> {
 
     private final ObjectMapper objectMapper;
@@ -29,7 +31,12 @@ public class SuccessResponseAdvice implements ResponseBodyAdvice<Object> {
                                   @NonNull MediaType selectedContentType,
                                   @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
                                   @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
-
+        if (body instanceof ErrorResponse || body instanceof SuccessResponse) {
+            return body;
+        }
+        if (body instanceof String) {
+            return objectMapper.writeValueAsString(SuccessResponse.of(body));
+        }
         return SuccessResponse.of(body);
     }
 }
