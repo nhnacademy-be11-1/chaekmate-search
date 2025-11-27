@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import shop.chaekmate.search.common.ErrorCode;
 import shop.chaekmate.search.common.ErrorResponse;
-
 class GlobalExceptionHandlerTest {
     GlobalExceptionHandler handler = new GlobalExceptionHandler();
 

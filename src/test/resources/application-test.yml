@@ -34,8 +34,8 @@ rabbitmq:
   exchange:
     name: cm-book-exchange
   queues:
-    queue-names:  cm-book-1, cm-book-2, cm-book-3
-    routing-keys:  cm-book-key-1, cm-book-key-2, cm-book-key-3
+    queue-names:  cm-book-1-test
+    routing-keys:  cm-book-key-1-test
 
 ollama:
   api:
@@ -44,3 +44,7 @@ ollama:
 rerank:
   api:
     url: ${RERANK_API_URL}
+
+chaekmate:
+  logstorage:
+    enabled: false

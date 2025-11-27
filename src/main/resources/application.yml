@@ -1,7 +1,8 @@
-spring:
-  application:
-    name: chaekmate-search
+# Search Server Port
+server:
+  port: 9400
 
+spring:
   rabbitmq:
     host: ${RABBITMQ_HOST}
     port: 5672
@@ -12,7 +13,6 @@ spring:
     uris: ${ES_URL}
     username: ${ES_USERNAME}
     password: ${ES_PASSWORD}
-
   data:
     redis:
       host: ${REDIS_HOST}
@@ -29,20 +29,13 @@ spring:
             options:
               model: gemini-2.5-flash
 
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-
-  instance:
-    prefer-ip-address: true
 
 rabbitmq:
   exchange:
     name: cm-book-exchange
   queues:
-    queue-names:  cm-book-1, cm-book-2
-    routing-keys:  cm-book-key-1, cm-book-key-2
+    queue-names:  cm-book-1-test
+    routing-keys:  cm-book-key-1-test
 
 ollama:
   api:
@@ -51,9 +44,6 @@ ollama:
 rerank:
   api:
     url: ${RERANK_API_URL}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health, info
+chaekmate:
+  logstorage:
+    enabled: false

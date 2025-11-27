@@ -122,7 +122,7 @@ class BookTaskTest {
 
         verify(deleteQueue, times(0)).offer(any());
 
-        verify(saveQueue, times(1)).offer(any());
+        verify(saveQueue, timeout(5000).times(1)).offer(any());
         verify(saveQueue, timeout(5000).atLeast(1)).poll();
     }
 
@@ -138,7 +138,7 @@ class BookTaskTest {
 
         verify(deleteQueue, times(0)).offer(any());
 
-        verify(saveQueue, times(1)).offer(any());
+        verify(saveQueue, timeout(5000).times(1)).offer(any());
         verify(saveQueue, timeout(5000).atLeast(1)).poll();
 
     }
