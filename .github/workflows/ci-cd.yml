@@ -30,6 +30,7 @@ jobs:
       REDIS_RANGE: ${{ secrets.REDIS_RANGE }}
       EUREKA_URL_PROD: ${{ secrets.EUREKA_URL_PROD }}
       RERANK_API_URL: ${{ secrets.RERANK_API_URL }}
+
     steps:
       # Step.1 코드 체크아웃
       - uses: actions/checkout@v3
@@ -126,4 +127,5 @@ jobs:
             export REDIS_RANGE="${{ secrets.REDIS_RANGE }}"
             export EUREKA_URL_PROD="${{ secrets.EUREKA_URL_PROD }}"
             export RERANK_API_URL="${{ secrets.RERANK_API_URL }}"
-            bash -lc ./startup.sh
+            export RUN_INFO="${{ secrets.RUN_INFO }}"
+            bash -lc ./startup-search.sh
