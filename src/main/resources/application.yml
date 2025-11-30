@@ -44,6 +44,3 @@ ollama:
 rerank:
   api:
     url: ${RERANK_API_URL}
-chaekmate:
-  logstorage:
-    enabled: false
