@@ -14,11 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Document(indexName = "books", writeTypeHint = WriteTypeHint.FALSE)
+@Document(indexName = "chaekmate-books", writeTypeHint = WriteTypeHint.FALSE)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setting(settingPath = "elasticsearch/settings/korean-analyzer.json")
-@Mapping(mappingPath = "elasticsearch/mappings/books-mapping.json")
+@Mapping(mappingPath = "elasticsearch/mappings/chaekmate-books-mapping.json")
 public class Book {
     @Id
     private Long id;
