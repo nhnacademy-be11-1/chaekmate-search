@@ -49,11 +49,14 @@ public class BookIndexService {
 
 
     public Book update(BookInfoRequest bookInfoRequest) {
-        Book bookIndex = Valid.isBook(bookRepository.findById(bookInfoRequest.getId()));
-        String text = EmbeddingTextBuilder.toText(bookInfoRequest);
-        EmbeddingResponse embeddingResponse = aiApiClient.createEmbedding(text);
-        bookIndex.update(bookInfoRequest, embeddingResponse.getEmbedding());
-        return bookIndex;
+        return bookRepository.findById(bookInfoRequest.getId())
+                .map(book -> {
+                    String text = EmbeddingTextBuilder.toText(bookInfoRequest);
+                    EmbeddingResponse embeddingResponse = aiApiClient.createEmbedding(text);
+                    book.update(bookInfoRequest, embeddingResponse.getEmbedding());
+                    return book;
+                })
+                .orElse(null);
     }
 
 

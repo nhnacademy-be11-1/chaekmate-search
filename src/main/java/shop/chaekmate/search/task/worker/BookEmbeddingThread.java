@@ -32,6 +32,9 @@ public class BookEmbeddingThread implements Runnable {
                 BookTaskExecutor<TaskMapping<BookInfoRequest>, TaskMapping<Book>> bookTaskExecutor = taskExecutorRegistry.get(
                         task.getEventType());
                 TaskMapping<Book> nextTask = bookTaskExecutor.execute(task);
+                if (nextTask == null) {
+                    continue;
+                }
                 BookTaskQueue<TaskMapping<Book>> nextQueue =
                         bookTaskQueueRegistry.getQueue(nextTask.getEventType());
                 nextQueue.offer(nextTask);
