@@ -16,7 +16,11 @@ public class BookTaskUpdate implements BookTaskExecutor<TaskMapping<BookInfoRequ
 
     @Override
     public TaskMapping<Book> execute(TaskMapping<BookInfoRequest> mapping) {
-        return new TaskMapping<>(EventType.SAVE, bookIndexService.update(mapping.getTaskData()));
+        Book book = bookIndexService.update(mapping.getTaskData());
+        if (book == null) {
+            return null;
+        }
+        return new TaskMapping<>(EventType.SAVE, book);
     }
 
     @Override

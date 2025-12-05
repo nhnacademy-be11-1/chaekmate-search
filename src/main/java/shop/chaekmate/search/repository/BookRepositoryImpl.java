@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepositoryCustom {
     private final ElasticsearchClient client;
-    private static final String BOOK_INDEX = "books";
+    private static final String BOOK_INDEX = "chaekmate-books";
     private static final String KEYWORD_GROUP_INDEX = "keywordgroups";
 
     @Override

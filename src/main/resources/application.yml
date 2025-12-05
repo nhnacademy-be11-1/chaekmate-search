@@ -36,15 +36,15 @@ eureka:
 
   instance:
     prefer-ip-address: true
-    lease-renewal-interval-in-seconds: 5
-    lease-expiration-duration-in-seconds: 10
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
 
 rabbitmq:
   exchange:
     name: cm-book-exchange
   queues:
-    queue-names:  cm-book-1, cm-book-2, cm-book-3
-    routing-keys:  cm-book-key-1, cm-book-key-2, cm-book-key-3
+    queue-names:  cm-book-1
+    routing-keys:  cm-book-key-1
 
 ollama:
   api:
